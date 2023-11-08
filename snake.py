@@ -141,13 +141,13 @@ class Snake:
         self.y.append(-1)
 
 class Game:
-    def __init__(self):
+    def __init__(self, screen):
         pygame.init()
         pygame.display.set_caption("Codebasics Snake And Apple Game")
         pygame.mixer.init()
         self.play_background_music()
 
-        self.surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGTH))
+        self.surface = screen
         self.snake = Snake(self.surface)
         self.snake.draw()
         self.apple = Food(self.surface)
@@ -259,7 +259,3 @@ class Game:
                 self.reset()
                 
             clock.tick(60)
-
-if __name__ == '__main__':
-    game = Game()
-    game.run()

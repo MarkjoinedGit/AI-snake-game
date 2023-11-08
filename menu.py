@@ -4,16 +4,17 @@ from pygame.sprite import Group
 import color as col
 import buttons as btn
 import test
+import snake
 
 def draw_sub_menu(menu_list, menu_open):
     screen.blit(sub_menu_surf, sub_menu_rect)
     for btn in menu_list:
         btn.draw()
-    if menu_rect.collidepoint(pg.mouse.get_pos()) and pg.mouse.get_pressed()[0] and sub_menu_rect.collidepoint(pg.mouse.get_pos()) == False:
-        menu_open = False
-    else:
-        menu_open = True
-    return menu_open    
+    # if menu_rect.collidepoint(pg.mouse.get_pos()) and pg.mouse.get_pressed()[0] and sub_menu_rect.collidepoint(pg.mouse.get_pos()) == False:
+    #     menu_open = False
+    # else:
+    #     menu_open = True
+    # return menu_open    
 
 
 pg.init()
@@ -72,6 +73,9 @@ while True:
         if event.type == pg.MOUSEBUTTONDOWN:
             for btn in btn_menu_list:
                 if btn.check_click():
+                    mode_menu_open = False
+                    setting_menu_open = False
+                    start_game = False
                     if btn.text == 'Mode':
                         mode_menu_open = True
                     elif btn.text == 'Settings':
@@ -89,15 +93,17 @@ while True:
                 btn.draw()
 
             if mode_menu_open:
-                mode_menu_open = draw_sub_menu(btn_sub_mode_list, mode_menu_open)
-            
+                draw_sub_menu(btn_sub_mode_list, mode_menu_open)         
             elif setting_menu_open:
-                mode_menu_open = draw_sub_menu(btn_sub_setting_list, setting_menu_open)
+                draw_sub_menu(btn_sub_setting_list, setting_menu_open)
 
     else:
         tst = test.DisplayGame(screen)
         tst.drawMainDisplay()
+        # tst = snake.Game(screen)
+        # tst.run()
         start_game = False
+        mode_menu_open = False
 
     pg.display.update()
     clock.tick(60)
