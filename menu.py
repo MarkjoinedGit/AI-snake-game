@@ -8,7 +8,7 @@ def draw_sub_menu(menu_list, menu_open):
     screen.blit(sub_menu_surf, sub_menu_rect)
     for btn in menu_list:
         btn.draw(menu_open, menu_open)
-    if menu_rect.collidepoint(pg.mouse.get_pos()) and pg.mouse.get_pressed()[0]:
+    if menu_rect.collidepoint(pg.mouse.get_pos()) and pg.mouse.get_pressed()[0] and sub_menu_rect.collidepoint(pg.mouse.get_pos()) == False:
         menu_open = False
     else:
         menu_open = True
