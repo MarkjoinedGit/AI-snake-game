@@ -98,10 +98,10 @@ while True:
                 draw_sub_menu(btn_sub_setting_list, setting_menu_open)
 
     else:
-        tst = test.DisplayGame(screen)
-        tst.drawMainDisplay()
-        # tst = snake.Game(screen)
-        # tst.run()
+        # tst = test.DisplayGame(screen)
+        # tst.drawMainDisplay()
+        tst = snake.Game(screen)
+        tst.run()
         start_game = False
         mode_menu_open = False
 
