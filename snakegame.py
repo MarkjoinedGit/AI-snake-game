@@ -5,7 +5,6 @@ from food import Food
 import buttons as btn
 from static import *
 
-
 class Game:
     def __init__(self):
         pygame.init()
@@ -99,10 +98,12 @@ class Game:
         return False
 
     def render_background(self):
+        self.surface.fill('black')
         bg = BACKGROUND_IMG.convert_alpha()
         self.surface.blit(bg, (0,0))
 
     def play(self):
+        self.surface.fill('black')
         self.render_background() 
         self.surface.blit(self.navbar,(0,0))
         self.drawBorderBoard()
@@ -169,19 +170,12 @@ class Game:
             
         for btn in btn_sub_algorithm_list:
             btn.draw()
-            
-        if self.menu_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
-            menu_open = False
-        else:
-            menu_open = True
-        return menu_open
     
     def run(self):
         running = True
         pause = False
        
         while running:
-            
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
@@ -208,7 +202,12 @@ class Game:
                 if event.type == pygame.QUIT:
                     running = False
                     pygame.quit()
-                if event.type == pygame.MOUSEBUTTONDOWN:         
+                if event.type == pygame.MOUSEBUTTONDOWN: 
+                    if self.sub_mode_rect.collidepoint(pygame.mouse.get_pos()) == False and self.sub_algorithm_rect.collidepoint(pygame.mouse.get_pos()) == False:
+                        self.mode_menu_open = False      
+                        pause=False  
+                    for btn in self.btn_menu_list:
+                        btn.pressed = False
                     for btn in self.btn_menu_list:
                         if btn.check_click():   
                             if btn.text == 'MENU':
@@ -217,9 +216,11 @@ class Game:
                                 self.mode_menu_open = True
                             if btn.text == 'PLAY':
                                 pause= False
-                                self.mode_menu_open = True
                     if self.logo_rect.collidepoint(pygame.mouse.get_pos()):
                         print('collide with logo')
+                        self.show_game_over()
+                        pause = True
+                        self.reset()
                         return
             try:
                 if not pause:
@@ -231,9 +232,10 @@ class Game:
                         for btn in self.btn_menu_list:
                             btn.draw()
                         if self.mode_menu_open:
-                            self.mode_menu_open = self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open)
+                            self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open)
                     pygame.display.flip()
             except Exception as e:
+                print(e)
                 self.show_game_over()
                 pause = True
                 self.reset()
