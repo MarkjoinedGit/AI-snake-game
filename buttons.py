@@ -1,6 +1,6 @@
 
 import pygame as pg
-import color as col
+from static import *
 
 class Button():
     def __init__(self, screen, text_font, text, width, height, pos, border_true, color_bg, color_hover_bg, def_color_text, color_hover_text):
@@ -18,7 +18,7 @@ class Button():
         self.def_color_text = def_color_text
         self.color_text = self.def_color_text
         self.color_hover_text = color_hover_text
-        self.text_surf = text_font.render(self.text, True, col.WHITE)
+        self.text_surf = text_font.render(self.text, True, WHITE)
         self.text_rect = self.text_surf.get_rect(center=self.top_rect.center)
     def draw(self):
         self.text_surf = self.text_font.render(self.text, True, self.color_text)

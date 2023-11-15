@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import *
 from snake import Snake
 from food import Food
-import my_color as col
 import buttons as btn
 from static import *
 
@@ -60,20 +59,20 @@ class Game:
         #buttons
         self.btn_menu_list = []
         for i in range(len(self.btn_list_func)):
-            button = btn.Button(self.surface, self.text_font, f'{self.btn_list_func[i]}', 100, 40, (200 +i*200, 5), True, col.WHITE, col.GREEN_HOVER, col.WHITE, col.GREEN_HOVER)
+            button = btn.Button(self.surface, self.text_font, f'{self.btn_list_func[i]}', 100, 40, (200 +i*200, 5), True, WHITE, GREEN_HOVER, WHITE, GREEN_HOVER)
             self.btn_menu_list.append(button)
 
         #buttons_sub_menu_mode
         self.btn_sub_mode_list = []
         for i in range(len(self.btn_list_mode)):
-            button = btn.Button(self.surface, self.text_font, f'{self.btn_list_mode[i]}', 280, 76, (0, 54 + 79*i), False, col.BLACK, col.BLACK_BLUE, col.WHITE, col.GREEN_HOVER)
+            button = btn.Button(self.surface, self.text_font, f'{self.btn_list_mode[i]}', 280, 76, (0, 54 + 79*i), False, BLACK, BLACK_BLUE, WHITE, GREEN_HOVER)
             self.btn_sub_mode_list.append(button)
         self.mode_menu_open = False
 
         #buttons_sub_menu_settings:
         self.btn_sub_algorithm_list = []
         for i in range(len(self.btn_list_algorithm)):
-            button = btn.Button(self.surface,self.text_font, f'{self.btn_list_algorithm[i]}', 280, 76, (300, 54 + 79*i), False, col.BLACK, col.BLACK_BLUE, col.WHITE, col.GREEN_HOVER)
+            button = btn.Button(self.surface,self.text_font, f'{self.btn_list_algorithm[i]}', 280, 76, (300, 54 + 79*i), False, BLACK, BLACK_BLUE, WHITE, GREEN_HOVER)
             self.btn_sub_algorithm_list.append(button)
         self.setting_menu_open = False
 
@@ -104,9 +103,16 @@ class Game:
         self.surface.blit(bg, (0,0))
 
     def play(self):
-        self.render_background()
+        self.render_background() 
         self.surface.blit(self.navbar,(0,0))
         self.drawBorderBoard()
+        if self.menu_mode:
+            self.surface.blit(self.logo_surf, self.logo_rect)
+            for btn in self.btn_menu_list:
+                btn.draw()
+            if self.mode_menu_open:
+                self.mode_menu_open = self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open)
+        
         self.snake.walk()
         self.food.draw()
         self.display_score()
@@ -118,12 +124,7 @@ class Game:
         # print("Food: ",(self.food.x,self.food.y))
         #Node(self.snake.x, self.snake.y, self.food.x, self.food.y).out()
   
-        if self.menu_mode:
-            self.surface.blit(self.logo_surf, self.logo_rect)
-            for btn in self.btn_menu_list:
-                btn.draw()
-            if self.mode_menu_open:
-                self.mode_menu_open = self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open) 
+         
                     
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,CELL_SIZE*2):      
         #if self.snake.head_rect.colliderect(self.food.rect):
@@ -142,9 +143,7 @@ class Game:
                 raise "Collision Occurred"
 
     def display_score(self):
-        font = pygame.font.SysFont('arial',30)
-        score = font.render(f"Score: {self.snake.length}",True,(200,200,200))
-        self.surface.blit(score,(850,10))
+        self.btn_menu_list[1].text=f"{self.snake.length-10}"
 
     def show_game_over(self):
         self.render_background()
@@ -182,6 +181,7 @@ class Game:
         pause = False
        
         while running:
+            
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
@@ -208,19 +208,31 @@ class Game:
                 if event.type == pygame.QUIT:
                     running = False
                     pygame.quit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN:         
                     for btn in self.btn_menu_list:
-                        if btn.check_click():
+                        if btn.check_click():   
                             if btn.text == 'MENU':
+                                pause = True
                                 print('get into menu')
                                 self.mode_menu_open = True
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                            if btn.text == 'PLAY':
+                                pause= False
+                                self.mode_menu_open = True
                     if self.logo_rect.collidepoint(pygame.mouse.get_pos()):
                         print('collide with logo')
                         return
             try:
                 if not pause:
                     self.play()
+                else:
+                    self.snake.draw()
+                    if self.menu_mode:
+                        self.surface.blit(self.logo_surf, self.logo_rect)
+                        for btn in self.btn_menu_list:
+                            btn.draw()
+                        if self.mode_menu_open:
+                            self.mode_menu_open = self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open)
+                    pygame.display.flip()
             except Exception as e:
                 self.show_game_over()
                 pause = True

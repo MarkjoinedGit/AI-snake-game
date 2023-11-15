@@ -1,9 +1,9 @@
 from typing import Any
 import pygame as pg
 from pygame.sprite import Group
-import color as col
 import buttons as btn
 import snakegame
+from static import *
 
 def draw_sub_menu(menu_list, menu_open):
     screen.blit(sub_menu_surf, sub_menu_rect)
@@ -47,18 +47,18 @@ text_font = pg.font.Font(r'assets\font\Inknut_Antiqua\InknutAntiqua-Bold.ttf', 1
 #buttons
 btn_menu_list = []
 for i in range(len(btn_list_func)):
-    button = btn.Button(screen, text_font, f'{btn_list_func[i]}', 162, 51, (739, 434 +i*56), True, col.WHITE, col.GREEN_HOVER, col.WHITE, col.GREEN_HOVER)
+    button = btn.Button(screen, text_font, f'{btn_list_func[i]}', 162, 51, (739, 434 +i*56), True, WHITE, GREEN_HOVER, WHITE, GREEN_HOVER)
     btn_menu_list.append(button)
 #buttons_sub_menu_mode
 btn_sub_mode_list = []
 for i in range(len(btn_list_mode)):
-    button = btn.Button(screen, text_font, f'{btn_list_mode[i]}', 280, 76, (0, 54 + 79*i), False, col.BLACK, col.BLACK_BLUE, col.WHITE, col.GREEN_HOVER)
+    button = btn.Button(screen, text_font, f'{btn_list_mode[i]}', 280, 76, (0, 54 + 79*i), False, BLACK, BLACK_BLUE, WHITE, GREEN_HOVER)
     btn_sub_mode_list.append(button)
 mode_menu_open = False
 #buttons_sub_menu_settings:
 btn_sub_setting_list = []
 for i in range(len(btn_list_setting)):
-    button = btn.Button(screen, text_font, f'{btn_list_setting[i]}', 280, 76, (0, 54 + 79*i), False, col.BLACK, col.BLACK_BLUE, col.WHITE, col.GREEN_HOVER)
+    button = btn.Button(screen, text_font, f'{btn_list_setting[i]}', 280, 76, (0, 54 + 79*i), False, BLACK, BLACK_BLUE, WHITE, GREEN_HOVER)
     btn_sub_setting_list.append(button)
 setting_menu_open = False
 

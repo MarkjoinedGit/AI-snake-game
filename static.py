@@ -24,21 +24,18 @@ SNAKE_HEAD_IMG = {
 BACKGROUND_IMG=pygame.image.load(r'assets\background.png')
 
 #MENU
-MENU_WIDTH, menu_height = 657, 683
-MENU_X = -MENU_WIDTH  # Đặt menu ẩn ban đầu
-MENU_Y = 50
 
 BLACK = (0, 0, 0)
 MENU_COLOR = (163,167,172)
 WHITE = (255, 255, 255)
 BODER_COLOR = (146,163,186)
 NAVBAR_COLOR = (15,15,15)
-
+GREEN_HOVER = (145, 254, 36)
+BLACK_BLUE = (35, 45, 63)
 BODER_WIDTH = 3
 BODER_COLOR = WHITE
 
-menu_surface = pygame.Surface((MENU_WIDTH, menu_height))
-menu_surface.fill(MENU_COLOR)
+
 
 CELL_SIZE = 5
 CELL_NUMBER_X = 210
