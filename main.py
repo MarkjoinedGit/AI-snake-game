@@ -3,8 +3,7 @@ import pygame as pg
 from pygame.sprite import Group
 import color as col
 import buttons as btn
-import test
-import snake
+import snakegame
 
 def draw_sub_menu(menu_list, menu_open):
     screen.blit(sub_menu_surf, sub_menu_rect)
@@ -98,10 +97,7 @@ while True:
                 draw_sub_menu(btn_sub_setting_list, setting_menu_open)
 
     else:
-        # tst = test.DisplayGame(screen)
-        # tst.drawMainDisplay()
-        tst = snake.Game(screen)
-        tst.run()
+        snakegame.Game().run()
         start_game = False
         mode_menu_open = False
 

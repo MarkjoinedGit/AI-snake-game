@@ -28,7 +28,7 @@ class Button():
             pg.draw.rect(self.screen, self.top_color, self.top_rect)
         self.screen.blit(self.text_surf, self.text_rect)
         self.check_click()
-
+    
     def check_click(self):
         mouse_pos = pg.mouse.get_pos()
         if self.top_rect.collidepoint(mouse_pos):
@@ -44,5 +44,4 @@ class Button():
             self.top_color = self.color_bg
             self.color_text = self.def_color_text
         return self.pressed
-
 

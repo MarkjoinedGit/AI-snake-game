@@ -3,43 +3,10 @@ import pygame as pg
 from pygame.sprite import Group
 import my_color as col
 import buttons as btn
+from static import *
 
 
 
-
-#MENU
-menu_width, menu_height = 657, 683
-menu_x = -menu_width  # Đặt menu ẩn ban đầu
-menu_y = 50
-
-black = (0, 0, 0)
-menu_color = (163,167,172)
-WHITE = (255, 255, 255)
-BORDER_COLOR = (146,163,186)
-NAVBAR_COLOR = (15,15,15)
-
-border_width = 3
-border_color = WHITE
-
-menu_surface = pg.Surface((menu_width, menu_height))
-menu_surface.fill(menu_color)
-
-CELL_SIZE = 20
-CELL_NUMBER_X = 50
-CELL_NUMBER_Y = 33
-
-ZERO_POS = 0
-HEIGHT_NAVBAR = 50
-
-WIDTH_BOARD = CELL_SIZE*CELL_NUMBER_X + CELL_SIZE*2
-HEIGHT_BOARD = CELL_NUMBER_Y*CELL_SIZE + CELL_SIZE*2 + HEIGHT_NAVBAR
-
-WIDTH_BORDER_BOARD = WIDTH_BOARD
-HEIGHT_BORDER_BOARD = CELL_SIZE
-
-# CLOSE_BTN_IMG = pg.image.load('close-btn.png')
-
-pos_border = [(ZERO_POS,HEIGHT_NAVBAR),(ZERO_POS, HEIGHT_BOARD - HEIGHT_BORDER_BOARD),(ZERO_POS,HEIGHT_NAVBAR),(WIDTH_BOARD - HEIGHT_BORDER_BOARD,HEIGHT_NAVBAR)]
 
 class DisplayGame():
     def __init__(self, screen):
@@ -48,6 +15,7 @@ class DisplayGame():
         pg.display.set_caption('Snather')
         self.clock = pg.time.Clock()
         pg.display.flip()
+        
         #menu
         self.menu_surf = pg.image.load(r'assets\menu\menu-bg.png').convert()
         self.menu_rect = self.menu_surf.get_rect(topleft = (0, 47.73))
