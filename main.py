@@ -5,15 +5,17 @@ import buttons as btn
 import snakegame
 from static import *
 
-def draw_sub_menu(menu_list, menu_open):
+def draw_sub_menu(menu_list):
     screen.blit(sub_menu_surf, sub_menu_rect)
     for btn in menu_list:
         btn.draw()
-    # if menu_rect.collidepoint(pg.mouse.get_pos()) and pg.mouse.get_pressed()[0] and sub_menu_rect.collidepoint(pg.mouse.get_pos()) == False:
-    #     menu_open = False
-    # else:
-    #     menu_open = True
-    # return menu_open    
+    # if pg.mouse.get_pressed()[0]:
+    #     if sub_menu_rect.collidepoint(pg.mouse.get_pos()):
+    #         return True
+    #     for btn in menu_list:
+    #         if btn.top_rect.collidepoint(pg.mouse.get_pos()):
+    #             return True
+    # return False    
 
 
 pg.init()
@@ -70,16 +72,24 @@ while True:
             pg.quit()
             exit()
         if event.type == pg.MOUSEBUTTONDOWN:
+            if sub_menu_rect.collidepoint(pg.mouse.get_pos()) == False:
+                mode_menu_open = False
+                setting_menu_open = False
+                start_game = False
+            #reset pressed for each btn
+            for btn in btn_menu_list:
+                btn.pressed = False
             for btn in btn_menu_list:
                 if btn.check_click():
-                    mode_menu_open = False
-                    setting_menu_open = False
-                    start_game = False
                     if btn.text == 'Mode':
+                        print(btn.check_click())
                         mode_menu_open = True
                     elif btn.text == 'Settings':
+                        print(btn.check_click())
                         setting_menu_open = True
                     elif btn.text == 'Start':
+                        print(btn.check_click())
+                        print('get in to start mode')
                         start_game = True
     screen.fill('black')
     if start_game == False:
@@ -92,14 +102,13 @@ while True:
                 btn.draw()
 
             if mode_menu_open:
-                draw_sub_menu(btn_sub_mode_list, mode_menu_open)         
+                draw_sub_menu(btn_sub_mode_list)         
             elif setting_menu_open:
-                draw_sub_menu(btn_sub_setting_list, setting_menu_open)
+                draw_sub_menu(btn_sub_setting_list)
 
     else:
         snakegame.Game().run()
         start_game = False
-        mode_menu_open = False
 
     pg.display.update()
     clock.tick(60)
