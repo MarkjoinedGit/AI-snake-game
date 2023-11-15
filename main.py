@@ -32,7 +32,7 @@ menu_mode = True
 nav_bar_surf = pg.image.load(r'assets\nav-bar\navbar.png').convert()
 nav_bar_rect = nav_bar_surf.get_rect(topleft=(0, 0))
 #logo
-logo_surf = pg.image.load(r'assets\nav-bar\logo.png').convert_alpha()
+logo_surf = pg.image.load(r'assets\nav-bar\logo-main.png').convert_alpha()
 logo_rect = logo_surf.get_rect(center=(60, 23.865))
 #button
 btn_image = r'assets\btn.png'

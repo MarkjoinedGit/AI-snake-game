@@ -44,7 +44,7 @@ class Game:
         self.navbar.fill(NAVBAR_COLOR)
 
         #logo
-        self.logo_surf = pygame.image.load(r'assets\nav-bar\logo.png').convert_alpha()
+        self.logo_surf = pygame.image.load(r'assets\nav-bar\logo-main.png').convert_alpha()
         self.logo_rect = self.logo_surf.get_rect(center=(60, 23.865))
         #button
         self.btn_image = r'assets\btn.png'
