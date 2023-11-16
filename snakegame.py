@@ -4,6 +4,7 @@ from snake import Snake
 from food import Food
 import buttons as btn
 from static import *
+from collections import deque
 
 class Game:
     def __init__(self):
@@ -102,31 +103,20 @@ class Game:
         bg = BACKGROUND_IMG.convert_alpha()
         self.surface.blit(bg, (0,0))
 
-    def play(self):
-        self.surface.fill('black')
-        self.render_background() 
-        self.surface.blit(self.navbar,(0,0))
-        self.drawBorderBoard()
-        if self.menu_mode:
-            self.surface.blit(self.logo_surf, self.logo_rect)
-            for btn in self.btn_menu_list:
-                btn.draw()
-            if self.mode_menu_open:
-                self.mode_menu_open = self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open)
-        
-        self.snake.walk()
+    def play_basic(self):
+        self.draw_display()
         self.food.draw()
+        self.snake.walk()
         self.display_score()
         pygame.display.flip()
 
-        # snake eating food scenario
-        # print("-----------------------------------------------------------")
-        # print(self.snake.x,self.snake.y,sep='\n')
-        # print("Food: ",(self.food.x,self.food.y))
-        #Node(self.snake.x, self.snake.y, self.food.x, self.food.y).out()
-  
-         
-                    
+        print("-----------------------------------------------------------")
+        print(self.snake.x,self.snake.y,sep='\n')
+        print("Food: ",(self.food.x,self.food.y))
+       
+        self.check_collision()
+            
+    def check_collision(self):
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,CELL_SIZE*2):      
         #if self.snake.head_rect.colliderect(self.food.rect):
             print("eat")
@@ -142,7 +132,32 @@ class Game:
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
                 self.play_sound('crash')
                 raise "Collision Occurred"
+            
+    def draw_display(self):
+        self.surface.fill('black')
+        self.render_background() 
+        self.surface.blit(self.navbar,(0,0))
+        self.drawBorderBoard()
+        if self.menu_mode:
+            self.surface.blit(self.logo_surf, self.logo_rect)
+            for btn in self.btn_menu_list:
+                btn.draw()
+            if self.mode_menu_open:
+                self.mode_menu_open = self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open)
+                
+    def play_algorithm(self):
+        self.draw_display()
+        self.snake.draw()
+        self.food.draw()
+        self.display_score()
+        pygame.display.flip()
 
+        # snake eating food scenario
+        print("-----------------------------------------------------------")
+        print(self.snake.x,self.snake.y,sep='\n')
+        print("Food: ",(self.food.x,self.food.y))
+        self.check_collision()  
+    
     def display_score(self):
         self.btn_menu_list[1].text=f"{self.snake.length-10}"
 
@@ -171,11 +186,36 @@ class Game:
         for btn in btn_sub_algorithm_list:
             btn.draw()
     
-    def run(self):
+    def displayMovement(self,move):
+        if move == "left":
+            if self.snake.direction=='up' or self.snake.direction=='down':
+                self.snake.move_left()
+
+        if move == "right":
+            if self.snake.direction=='up' or self.snake.direction=='down':
+                self.snake.move_right()
+
+        if move == "up":
+            if self.snake.direction=='left' or self.snake.direction=='right':
+                self.snake.move_up()
+
+        if move == "down":
+            if self.snake.direction=='left' or self.snake.direction=='right':
+                self.snake.move_down()
+    
+    def run_algorithm(self):
         running = True
         pause = False
-       
+        moves = deque(["right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","down","down","down","down","down"])
+
         while running:
+            if len(moves)==0:
+                pause = False
+                
+            if not pause:
+                move = moves.popleft()
+                print(move)
+                self.displayMovement(move)
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
@@ -183,22 +223,6 @@ class Game:
                     if event.key == K_RETURN:
                         pygame.mixer.music.unpause()
                         pause = False
-                    if not pause:
-                        if event.key == K_LEFT:
-                            if self.snake.direction=='up' or self.snake.direction=='down':
-                                self.snake.move_left()
-
-                        if event.key == K_RIGHT:
-                            if self.snake.direction=='up' or self.snake.direction=='down':
-                                self.snake.move_right()
-
-                        if event.key == K_UP:
-                            if self.snake.direction=='left' or self.snake.direction=='right':
-                                self.snake.move_up()
-
-                        if event.key == K_DOWN:
-                            if self.snake.direction=='left' or self.snake.direction=='right':
-                                self.snake.move_down()
                 if event.type == pygame.QUIT:
                     running = False
                     pygame.quit()
@@ -224,9 +248,75 @@ class Game:
                         return
             try:
                 if not pause:
-                    self.play()
+                    self.play_algorithm()
                 else:
-                    self.snake.draw()
+                    if self.menu_mode:
+                        self.surface.blit(self.logo_surf, self.logo_rect)
+                        for btn in self.btn_menu_list:
+                            btn.draw()
+                        if self.mode_menu_open:
+                            self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open)
+                    pygame.display.flip()
+            except Exception as e:
+                print(e)
+                self.show_game_over()
+                pause = True
+                self.reset()
+            self.clock.tick(5)
+    
+    def run_basic(self):
+        running = True
+        pause = False
+       
+        while running:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        running = False
+                    if event.key == K_RETURN:
+                        pygame.mixer.music.unpause()
+                        pause = False
+                    if not pause:
+                  
+                        if event.key == K_LEFT:
+                           self.displayMovement("left")
+
+                        if event.key == K_RIGHT:
+                            self.displayMovement("right")
+
+                        if event.key == K_UP:
+                            self.displayMovement("up")
+
+                        if event.key == K_DOWN:
+                            self.displayMovement("down")
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN: 
+                    if self.sub_mode_rect.collidepoint(pygame.mouse.get_pos()) == False and self.sub_algorithm_rect.collidepoint(pygame.mouse.get_pos()) == False:
+                        self.mode_menu_open = False      
+                        pause=False  
+                    for btn in self.btn_menu_list:
+                        btn.pressed = False
+                    for btn in self.btn_menu_list:
+                        if btn.check_click():   
+                            if btn.text == 'MENU':
+                                pause = True
+                                print('get into menu')
+                                self.mode_menu_open = True
+                            if btn.text == 'PLAY':
+                                pause= False
+                    if self.logo_rect.collidepoint(pygame.mouse.get_pos()):
+                        print('collide with logo')
+                        self.show_game_over()
+                        pause = True
+                        self.reset()
+                        return
+            try:
+                if not pause:
+                    self.play_basic()
+                else:
+                    #self.snake.draw()
                     if self.menu_mode:
                         self.surface.blit(self.logo_surf, self.logo_rect)
                         for btn in self.btn_menu_list:
@@ -240,3 +330,7 @@ class Game:
                 pause = True
                 self.reset()
             self.clock.tick(60)
+
+    def start(self):
+        #self.run_algorithm()
+        self.run_basic()
