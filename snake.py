@@ -55,7 +55,6 @@ class Snake:
             self.y[0] -= speed
         if self.direction == 'down':
             self.y[0] += speed
-
         self.draw()
 
     def draw(self):
