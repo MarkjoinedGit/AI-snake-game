@@ -26,3 +26,4 @@ class Node:
         self.matrix[:H, -1] = -2
         for i in range(NAV_H):
             self.matrix[i,:W] = -2
+            self.matrix[i,:W] = -2
