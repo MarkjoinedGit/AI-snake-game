@@ -1,9 +1,10 @@
 from node import *
 from collections import deque
 import numpy as np
+from queue import PriorityQueue
 from static import *
 
-class BFS_PATH:
+class Algorithm:
     def __init__(self, initial_X, initial_Y, food_x, food_y):
         self.X = initial_X
         self.Y = initial_Y
@@ -20,16 +21,16 @@ class BFS_PATH:
 
         if head_pos_x > 0:
             if matrix[head_pos_y][head_pos_x-1] == 0 or matrix[head_pos_y][head_pos_x-1] == -1:
-                moves.append("Left")
+                moves.append(LEFT)
         if head_pos_x < WIDTH_BOARD//CELL_SIZE-1:
             if matrix[head_pos_y][head_pos_x+1] == 0 or matrix[head_pos_y][head_pos_x+1] == -1:
-                moves.append("Right")
+                moves.append(RIGHT)
         if head_pos_y > 0:
             if matrix[head_pos_y-1][head_pos_x] == 0 or matrix[head_pos_y-1][head_pos_x] == -1:
-                moves.append("Up")
+                moves.append(UP)
         if head_pos_y < HEIGHT_BOARD//CELL_SIZE-1: 
             if matrix[head_pos_y+1][head_pos_x] == 0 or matrix[head_pos_y+1][head_pos_x] == -1:
-                moves.append("Down")
+                moves.append(DOWN)
 
         return moves
 
@@ -40,22 +41,22 @@ class BFS_PATH:
         tempY = np.roll(tempY, 1)
         speed = CELL_SIZE
         # update head
-        if move == 'Left':
+        if move == LEFT:
             tempX[0] = val_x - speed
             tempY[0] = val_y
-        if move == 'Right':
+        if move == RIGHT:
             tempX[0] = val_x + speed
             tempY[0] = val_y
-        if move == 'Up':
+        if move == UP:
             tempY[0] = val_y - speed 
             tempX[0] = val_x
-        if move == 'Down':
+        if move == DOWN:
             tempY[0] = val_y + speed 
             tempX[0] = val_x  
         new_matrix = Node(tempX, tempY, self.food_x, self.food_x).CreateState()
         return new_matrix, tempX, tempY
 
-    def bfs(self):
+    def BFS(self):
         visited = set()
         tempX = self.X.copy()
         tempY = self.Y.copy()
@@ -73,12 +74,47 @@ class BFS_PATH:
                     new_path = path + [move]
                     queue.append((new_matrix, new_path, newTempX, newTempY))
         
+    def DFS(self,depth_limit):       
+        def dfs_recursive(current_state, path, tempX,tempY,depth):
+            if tempX[0] == self.food_x and tempY[0] == self.food_y:
+                return path
 
+            if depth == depth_limit:
+                return None
+            
+            for move in self.get_possible_moves(current_state):
+                new_matrix, newTempX, newTempY = self.perform_move(current_matrix, move, tempX, tempY)
+                new_matrix_tuple = tuple(tuple(row) for row in new_matrix)
+                
+                if new_matrix_tuple not in visited:
+                    visited.add(new_matrix_tuple)
+                    new_path = path + [move]
+                    
+                    result = dfs_recursive(new_matrix, new_path, newTempX, newTempY, depth + 1)
+                    if result:
+                        return result
+                    
+        tempX = self.X.copy()
+        tempY = self.Y.copy()
+        stack = [(self.matrix_state, [], tempX, tempY)]
+        visited = set()    
+        while stack:
+            current_matrix, path,tempX,tempY = stack.pop()
+            print(current_matrix)
+            result = dfs_recursive(current_matrix, path, tempX, tempY, 0)
+            
+            if result:
+                return result
+    
 # Call method
 # X = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
 # Y =  [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
 
 # food_x = 250
 # food_y = 250
-# solution = BFS_PATH(X, Y, food_x, food_y).bfs()
+# #solution = Algorithm(X, Y, food_x, food_y).DFS(10)
+# #solution = Algorithm(X, Y, food_x, food_y).BFS()
 # print(solution)
+
+#dfs ['left', 'left', 'down', 'right', 'down', 'down', 'down', 'down', 'down']
+#bfs ['left', 'down', 'down', 'down', 'down', 'down', 'down']

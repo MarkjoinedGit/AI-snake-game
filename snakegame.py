@@ -1,10 +1,11 @@
 import pygame
 from pygame.locals import *
-from snake import Snake
-from food import Food
+from snake import *
+from food import *
 import buttons as btn
 from static import *
 from collections import deque
+from algorithm import *
 
 class Game:
     def __init__(self):
@@ -22,6 +23,8 @@ class Game:
         
         self.play_background_music()
         self.clock = pygame.time.Clock()
+        
+        self.actions = deque([])
         
         #menu
         self.menu_surf = pygame.image.load(r'assets\menu\menu-bg.png').convert()
@@ -103,26 +106,24 @@ class Game:
         bg = BACKGROUND_IMG.convert_alpha()
         self.surface.blit(bg, (0,0))
 
-    def play_basic(self):
+    def play(self):
         self.draw_display()
         self.food.draw()
         self.snake.walk()
         self.display_score()
         pygame.display.flip()
 
-        print("-----------------------------------------------------------")
-        print(self.snake.x,self.snake.y,sep='\n')
-        print("Food: ",(self.food.x,self.food.y))
-       
+        # print("-----------------------------------------------------------")
+        # print(self.snake.x,self.snake.y,sep='\n')
+        # print("Food: ",(self.food.x,self.food.y))
         self.check_collision()
             
     def check_collision(self):
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,CELL_SIZE*2):      
-        #if self.snake.head_rect.colliderect(self.food.rect):
             print("eat")
             self.play_sound("ding")
             self.snake.increase_length()
-            self.food.move()
+            self.food.move()  
         
         if self.snake.x[0] <= CELL_SIZE or self.snake.x[0]>= WIDTH_BOARD-CELL_SIZE or self.snake.y[0] <= CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]>= HEIGHT_BOARD-CELL_SIZE:
             self.play_sound('crash')
@@ -145,19 +146,6 @@ class Game:
             if self.mode_menu_open:
                 self.mode_menu_open = self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open)
                 
-    def play_algorithm(self):
-        self.draw_display()
-        self.snake.draw()
-        self.food.draw()
-        self.display_score()
-        pygame.display.flip()
-
-        # snake eating food scenario
-        print("-----------------------------------------------------------")
-        print(self.snake.x,self.snake.y,sep='\n')
-        print("Food: ",(self.food.x,self.food.y))
-        self.check_collision()  
-    
     def display_score(self):
         self.btn_menu_list[1].text=f"{self.snake.length-10}"
 
@@ -187,35 +175,33 @@ class Game:
             btn.draw()
     
     def displayMovement(self,move):
-        if move == "left":
-            if self.snake.direction=='up' or self.snake.direction=='down':
+        if move == LEFT:
+            if self.snake.direction==UP or self.snake.direction==DOWN:
                 self.snake.move_left()
 
-        if move == "right":
-            if self.snake.direction=='up' or self.snake.direction=='down':
+        if move == RIGHT:
+            if self.snake.direction==UP or self.snake.direction==DOWN:
                 self.snake.move_right()
 
-        if move == "up":
-            if self.snake.direction=='left' or self.snake.direction=='right':
+        if move == UP:
+            if self.snake.direction==LEFT or self.snake.direction==RIGHT:
                 self.snake.move_up()
 
-        if move == "down":
-            if self.snake.direction=='left' or self.snake.direction=='right':
+        if move == DOWN:
+            if self.snake.direction==LEFT or self.snake.direction==RIGHT:
                 self.snake.move_down()
     
     def run_algorithm(self):
         running = True
         pause = False
-        moves = deque(["right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","down","down","down","down","down"])
-
+        self.actions = deque(['left', 'left', 'down', 'right', 'down', 'down', 'down', 'down', 'down'])
+        # self.actions = deque(BFS_PATH(self.snake.x,self.snake.y,self.food.x,self.food.y).bfs())
         while running:
-            if len(moves)==0:
-                pause = False
-                
-            if not pause:
-                move = moves.popleft()
-                print(move)
-                self.displayMovement(move)
+            if len(self.actions) == 0:
+                self.actions = deque([DOWN]*50+[RIGHT]*50+[UP]*50+[LEFT]*50)
+                #self.actions = deque(BFS_PATH(self.snake.x,self.snake.y,self.food.x,self.food.y).bfs())  
+            move = self.actions.popleft()
+            self.displayMovement(move)
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
@@ -248,7 +234,7 @@ class Game:
                         return
             try:
                 if not pause:
-                    self.play_algorithm()
+                    self.play()
                 else:
                     if self.menu_mode:
                         self.surface.blit(self.logo_surf, self.logo_rect)
@@ -262,7 +248,7 @@ class Game:
                 self.show_game_over()
                 pause = True
                 self.reset()
-            self.clock.tick(5)
+            self.clock.tick(60)
     
     def run_basic(self):
         running = True
@@ -279,16 +265,16 @@ class Game:
                     if not pause:
                   
                         if event.key == K_LEFT:
-                           self.displayMovement("left")
+                           self.displayMovement(LEFT)
 
                         if event.key == K_RIGHT:
-                            self.displayMovement("right")
+                            self.displayMovement(RIGHT)
 
                         if event.key == K_UP:
-                            self.displayMovement("up")
+                            self.displayMovement(UP)
 
                         if event.key == K_DOWN:
-                            self.displayMovement("down")
+                            self.displayMovement(DOWN)
                 if event.type == pygame.QUIT:
                     running = False
                     pygame.quit()
@@ -314,7 +300,7 @@ class Game:
                         return
             try:
                 if not pause:
-                    self.play_basic()
+                    self.play()
                 else:
                     #self.snake.draw()
                     if self.menu_mode:
@@ -332,5 +318,5 @@ class Game:
             self.clock.tick(60)
 
     def start(self):
-        #self.run_algorithm()
-        self.run_basic()
+        self.run_algorithm()
+        #self.run_basic()
