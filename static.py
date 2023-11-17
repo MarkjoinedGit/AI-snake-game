@@ -55,3 +55,10 @@ LEFT="left"
 RIGHT="right"
 UP="up"
 DOWN="down"
+
+EMPTY = 0
+FOOD = -1
+HEAD = 1
+OBSTACLE=-2
+
+TIME_LIMIT=0.2

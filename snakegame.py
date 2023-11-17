@@ -6,6 +6,7 @@ import buttons as btn
 from static import *
 from collections import deque
 from algorithm import *
+from greedy import *
 
 class Game:
     def __init__(self):
@@ -106,18 +107,29 @@ class Game:
         bg = BACKGROUND_IMG.convert_alpha()
         self.surface.blit(bg, (0,0))
 
-    def play(self):
+    def play_algorithm(self):
         self.draw_display()
         self.food.draw()
         self.snake.walk()
         self.display_score()
         pygame.display.flip()
-
         # print("-----------------------------------------------------------")
         # print(self.snake.x,self.snake.y,sep='\n')
         # print("Food: ",(self.food.x,self.food.y))
-        self.check_collision()
-            
+        # print(self.actions)
+        self.check_collision_algorithm()
+                    
+    def play_basic(self):
+        self.draw_display()
+        self.food.draw()
+        self.snake.walk()
+        self.display_score()
+        pygame.display.flip()
+        print("-----------------------------------------------------------")
+        print(self.snake.x,self.snake.y,sep='\n')
+        print("Food: ",(self.food.x,self.food.y))
+        self.check_collision()   
+    
     def check_collision(self):
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,CELL_SIZE*2):      
             print("eat")
@@ -133,7 +145,33 @@ class Game:
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
                 self.play_sound('crash')
                 raise "Collision Occurred"
-            
+    
+    def GreedyAlgorithm(self):
+        self.actions = deque(Greedy(Node(self.snake.x,self.snake.y,self.food.x,self.food.y)).find_pos_greedy() )
+    
+    def check_collision_algorithm(self):
+        if len(self.actions)==0:      
+            print("eat")
+            self.play_sound("ding")
+            self.snake.increase_length()   
+            checking=True
+            while checking:    
+                try:    
+                    self.food.move()   
+                    self.GreedyAlgorithm()
+                    checking=False
+                except TimeoutError as e:
+                    print(e)
+                    self.food.move()   
+        if self.snake.x[0] <= CELL_SIZE or self.snake.x[0]>= WIDTH_BOARD-CELL_SIZE or self.snake.y[0] <= CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]>= HEIGHT_BOARD-CELL_SIZE:
+            print("Collision with Obstacle")
+            self.play_sound('crash')
+            raise "Collision Occurred"
+        for i in range(3, self.snake.length):
+            if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
+                self.play_sound('crash')
+                print("Collision with itself")
+                raise "Collision Occurred"       
     def draw_display(self):
         self.surface.fill('black')
         self.render_background() 
@@ -194,14 +232,13 @@ class Game:
     def run_algorithm(self):
         running = True
         pause = False
-        self.actions = deque(['left', 'left', 'down', 'right', 'down', 'down', 'down', 'down', 'down'])
+        #self.actions = deque(['left', 'left', 'down', 'right', 'down', 'down', 'down', 'down', 'down'])
         # self.actions = deque(BFS_PATH(self.snake.x,self.snake.y,self.food.x,self.food.y).bfs())
+        self.GreedyAlgorithm()
         while running:
-            if len(self.actions) == 0:
-                self.actions = deque([DOWN]*50+[RIGHT]*50+[UP]*50+[LEFT]*50)
-                #self.actions = deque(BFS_PATH(self.snake.x,self.snake.y,self.food.x,self.food.y).bfs())  
-            move = self.actions.popleft()
-            self.displayMovement(move)
+            if(len(self.actions)>0):        
+                move = self.actions.popleft()
+                self.displayMovement(move)
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
@@ -234,7 +271,7 @@ class Game:
                         return
             try:
                 if not pause:
-                    self.play()
+                    self.play_algorithm()
                 else:
                     if self.menu_mode:
                         self.surface.blit(self.logo_surf, self.logo_rect)
@@ -300,7 +337,7 @@ class Game:
                         return
             try:
                 if not pause:
-                    self.play()
+                    self.play_basic()
                 else:
                     #self.snake.draw()
                     if self.menu_mode:
