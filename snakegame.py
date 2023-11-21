@@ -5,8 +5,9 @@ from food import *
 import buttons as btn
 from static import *
 from collections import deque
-from algorithm import *
+from bfs import *
 from greedy import *
+from ucs import *
 
 class Game:
     def __init__(self):
@@ -152,28 +153,23 @@ class Game:
     
     def GreedyAlgorithm(self):
         self.actions = deque(Greedy(Node(self.snake.x,self.snake.y,self.food.x,self.food.y)).find_pos_greedy())
+    
     def BFSAlgorithm(self):
-        self.actions = deque(Algorithm(self.snake.x,self.snake.y,self.food.x,self.food.y).BFS())
+        self.actions = deque(BFS(self.snake.x,self.snake.y,self.food.x,self.food.y).bfs())
+    
+    def UCSAlgorithm(self):
+        self.actions = deque(UCS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y)).ucs_snake_game())
+        
     def check_collision_algorithm(self):
         if len(self.actions)==0:      
             print("eat")
             self.play_sound("ding")
-            self.snake.increase_length()
-            # self.food.move()     
+            self.snake.increase_length()   
             self.create_ValidFood()
-            self.BFSAlgorithm() 
+            #self.BFSAlgorithm() 
+            self.UCSAlgorithm()
             #self.GreedyAlgorithm()
     
-            # checking=True
-            # while checking:    
-            #     try:
-            #         self.food.move()     
-            #         self.BFSAlgorithm()  
-            #         #self.GreedyAlgorithm()
-            #         checking=False
-            #     except TimeoutError as e:
-            #         print(e)
-            #         self.food.move()   
         if self.snake.x[0] <= CELL_SIZE or self.snake.x[0]>= WIDTH_BOARD-CELL_SIZE or self.snake.y[0] <= CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]>= HEIGHT_BOARD-CELL_SIZE:
             print("Collision with Obstacle")
             self.play_sound('crash')
@@ -243,7 +239,8 @@ class Game:
     def run_algorithm(self):
         running = True
         pause = False
-        self.BFSAlgorithm()
+        #self.BFSAlgorithm()
+        self.UCSAlgorithm()
         #self.GreedyAlgorithm()
         while running:
             if(len(self.actions)>0):        

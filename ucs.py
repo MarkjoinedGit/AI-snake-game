@@ -103,10 +103,6 @@ class UCS:
                     new_x, new_y = x + dx, y + dy
                     if self.is_valid(self.snake_state[new_y,new_x]) and (new_y, new_x) not in visited:
                         heapq.heappush(priority_queue, (cost + 1, (new_y, new_x, path)))
-                        # print("đầu: ", end='')
-                        # print(self.snake_y, self.snake_x)
-                        # print("thức ăn: ", end='')
-                        # print(self.food_y, self.food_x)
                         directs.append(direction_mapping[(dy, dx)])
                         if self.dist([self.snake_y, self.snake_x], [self.food_y, self.food_x]) <=1:
                             return directs
@@ -117,33 +113,22 @@ class UCS:
     
 
 
-foodX = 300
-foodY = 350
-snakeY = [610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610]
-snakeX = [505, 500, 495, 490, 485, 480, 475, 470, 465, 460, 455, 450, 445, 440, 435]
-ucs = UCS(Node(snakeX,snakeY,foodX,foodY))
-state = ucs.snake_state
+# foodX = 300
+# foodY = 350
+# snakeY = [610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610]
+# snakeX = [505, 500, 495, 490, 485, 480, 475, 470, 465, 460, 455, 450, 445, 440, 435]
+# ucs = UCS(Node(snakeX,snakeY,foodX,foodY))
+# state = ucs.snake_state
 
-# print(greedy.snake_x)
-# print(greedy.snake_y)
-# print(greedy.food_x)
-# print(greedy.food_y)
-# '''
-# 64
-# 50
-# 49
-# 49
-# '''
 
-# print(state[3][2])
-start_time = time.time()
-# print(self.snake_y, self.snake_x)
-print(ucs.ucs_snake_game()) 
+# start_time = time.time()
+# # print(self.snake_y, self.snake_x)
+# print(ucs.ucs_snake_game()) 
 
-end_time = time.time()
+# end_time = time.time()
 
-# Tính thời gian chạy bằng cách lấy hiệu của thời điểm kết thúc và thời điểm bắt đầu
-elapsed_time = end_time - start_time
-print(f"Thời gian chạy: {elapsed_time} giây")
+# # Tính thời gian chạy bằng cách lấy hiệu của thời điểm kết thúc và thời điểm bắt đầu
+# elapsed_time = end_time - start_time
+# print(f"Thời gian chạy: {elapsed_time} giây")
 
 

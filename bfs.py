@@ -6,7 +6,7 @@ from static import *
 from queue import Queue
 import time
 
-class Algorithm:
+class BFS:
     def __init__(self, initial_X, initial_Y, food_x, food_y):
         self.X = initial_X
         self.Y = initial_Y
@@ -59,7 +59,7 @@ class Algorithm:
         return new_matrix, tempX, tempY
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and (mat[row][col] != -2) and not visited[row][col]
-    def BFS(self):
+    def bfs(self):
         mat = self.matrix_state
         src = ((self.Y[0]//CELL_SIZE)-1, (self.X[0]//CELL_SIZE)-1)
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
@@ -101,38 +101,6 @@ class Algorithm:
 
         # Nếu không tìm thấy đường đi, trả về None
         return None
-        
-    def DFS(self,depth_limit):       
-        def dfs_recursive(current_state, path, tempX,tempY,depth):
-            if tempX[0] == self.food_x and tempY[0] == self.food_y:
-                return path
-
-            if depth == depth_limit:
-                return None
-            
-            for move in self.get_possible_moves(current_state):
-                new_matrix, newTempX, newTempY = self.perform_move(current_matrix, move, tempX, tempY)
-                new_matrix_tuple = tuple(tuple(row) for row in new_matrix)
-                
-                if new_matrix_tuple not in visited:
-                    visited.add(new_matrix_tuple)
-                    new_path = path + [move]
-                    
-                    result = dfs_recursive(new_matrix, new_path, newTempX, newTempY, depth + 1)
-                    if result:
-                        return result
-                    
-        tempX = self.X.copy()
-        tempY = self.Y.copy()
-        stack = [(self.matrix_state, [], tempX, tempY)]
-        visited = set()    
-        while stack:
-            current_matrix, path,tempX,tempY = stack.pop()
-            print(current_matrix)
-            result = dfs_recursive(current_matrix, path, tempX, tempY, 0)
-            
-            if result:
-                return result
     
 # Call method
 # X = [340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, 285]
