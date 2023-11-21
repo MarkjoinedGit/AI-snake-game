@@ -22,8 +22,6 @@ class UCS:
         return FOOD <= value and value <= EMPTY
 
     def find_priority_move(self):
-        
-        
         priority = (-1 if self.snake_y - self.food_y < 0 else 1,\
                     -1 if self.snake_x - self.food_x > 0 else 1)
         if self.snake_y == self.food_y:  # Điểm nằm ngang với điểm thức ăn
@@ -33,14 +31,14 @@ class UCS:
         else:  # Điểm nằm ở một góc so với điểm thức ăn
             priority = (priority[0], priority[1])
             
-        priority_move = {( 1, 1):[(-1, 0),(0, 1)],
-                         ( 1,-1):[(-1, 0),(0,-1)],
-                         (-1,-1):[( 0,-1),(1, 0)],
-                         (-1, 1):[( 0, 1),(1, 0)],
-                         ( 0, 1):[( 0, 1)],  # Điểm nằm bên phải
-                         ( 0,-1):[( 0,-1)],  # Điểm nằm bên trái
-                         ( 1, 0):[(-1, 0)],  # Điểm nằm phía trên
-                         (-1, 0):[( 1, 0)]}  # Điểm nằm phía dưới
+        priority_move = {( 1, 1):[(-1, 0),(0, 1)], # Thức ăn nằm bên phải trên
+                         ( 1,-1):[(-1, 0),(0,-1)], # Thức ăn nằm bên trái trên
+                         (-1,-1):[( 0,-1),(1, 0)], # Thức ăn nằm bên trái dưới
+                         (-1, 1):[( 0, 1),(1, 0)], # Thức ăn nằm bên phải dưới
+                         ( 0, 1):[( 0, 1)],  # Thức ăn nằm bên phải
+                         ( 0,-1):[( 0,-1)],  # Thức ăn nằm bên trái
+                         ( 1, 0):[(-1, 0)],  # Thức ăn nằm phía trên
+                         (-1, 0):[( 1, 0)]}  # Thức ăn nằm phía dưới
 
         return priority_move[priority]
 
@@ -53,7 +51,7 @@ class UCS:
         snakeX = np.roll(snakeX, 1)
         snakeY = np.roll(snakeY, 1)
         
-        print(move)
+        # print(move)
         speed = 5
         if move == LEFT :
             snakeY[0] = head_y
@@ -85,8 +83,7 @@ class UCS:
         return dist
 
     def ucs_snake_game(self):
-        rows = len(self.snake_state)
-        cols = len(self.snake_state[0])
+        directs = []
         
         # Khởi tạo hàng đợi ưu tiên
         priority_queue = [(0, (self.snake_y, self.snake_x, []))]  # (cost, (x, y, path))
@@ -97,23 +94,22 @@ class UCS:
             if (x, y) not in visited:
                 visited.add((y, x))
                 path = path + [(y, x)]
-                
                 # directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-                
                 directions = self.find_priority_move()
-                print(directions)
+                # print(directions)
                 direction_mapping = {(0, 1): RIGHT, (0, -1): LEFT, (1, 0): DOWN, (-1, 0): UP}
                 direction_mapping = {key: value for key, value in direction_mapping.items() if key in directions}
                 for dy, dx in directions:
                     new_x, new_y = x + dx, y + dy
                     if self.is_valid(self.snake_state[new_y,new_x]) and (new_y, new_x) not in visited:
                         heapq.heappush(priority_queue, (cost + 1, (new_y, new_x, path)))
-                        print("đầu: ", end='')
-                        print(self.snake_y, self.snake_x)
-                        print("thức ăn: ", end='')
-                        print(self.food_y, self.food_x)
+                        # print("đầu: ", end='')
+                        # print(self.snake_y, self.snake_x)
+                        # print("thức ăn: ", end='')
+                        # print(self.food_y, self.food_x)
+                        directs.append(direction_mapping[(dy, dx)])
                         if self.dist([self.snake_y, self.snake_x], [self.food_y, self.food_x]) <=1:
-                            return path + [(y, x)] 
+                            return directs
                         snake_new_node = self.move(direction_mapping[(dy, dx)])
                         self.updateNode(snake_new_node)
         return None
@@ -125,8 +121,8 @@ foodX = 300
 foodY = 350
 snakeY = [610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610]
 snakeX = [505, 500, 495, 490, 485, 480, 475, 470, 465, 460, 455, 450, 445, 440, 435]
-greedy = UCS(Node(snakeX,snakeY,foodX,foodY))
-state = greedy.snake_state
+ucs = UCS(Node(snakeX,snakeY,foodX,foodY))
+state = ucs.snake_state
 
 # print(greedy.snake_x)
 # print(greedy.snake_y)
@@ -142,7 +138,7 @@ state = greedy.snake_state
 # print(state[3][2])
 start_time = time.time()
 # print(self.snake_y, self.snake_x)
-print(greedy.ucs_snake_game()) 
+print(ucs.ucs_snake_game()) 
 
 end_time = time.time()
 
