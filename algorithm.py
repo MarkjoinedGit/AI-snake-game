@@ -3,6 +3,8 @@ from collections import deque
 import numpy as np
 from queue import PriorityQueue
 from static import *
+from queue import Queue
+import time
 
 class Algorithm:
     def __init__(self, initial_X, initial_Y, food_x, food_y):
@@ -55,24 +57,50 @@ class Algorithm:
             tempX[0] = val_x  
         new_matrix = Node(tempX, tempY, self.food_x, self.food_x).CreateState()
         return new_matrix, tempX, tempY
-
+    def isValid(sefl, mat, visited, row, col):
+        return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and (mat[row][col] != -2) and not visited[row][col]
     def BFS(self):
-        visited = set()
-        tempX = self.X.copy()
-        tempY = self.Y.copy()
-        queue = deque([(self.matrix_state, [], tempX, tempY)])
+        mat = self.matrix_state
+        src = ((self.Y[0]//CELL_SIZE)-1, (self.X[0]//CELL_SIZE)-1)
+        dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
+        # Khởi tạo mảng visited
+        visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
 
-        while queue:
-            current_matrix, path, tempX, tempY = queue.popleft()
-            if tempX[0] == self.food_x and tempY[0] == self.food_y:
+        # Tạo hàng đợi để lưu trữ các ô của bàn chơi
+        q = Queue()
+
+        # Đánh dấu ô nguồn là đã được thăm và đưa nó vào hàng đợi
+        visited[src[0]][src[1]] = True
+        q.put((src, []))  # (ô hiện tại, danh sách hướng di chuyển)
+
+        # start_time = time.time()
+        
+        # Lặp cho đến khi hàng đợi trống
+        while not q.empty():
+            # if(time.time()-start_time>=TIME_LIMIT):
+            #     raise TimeoutError(f"over {TIME_LIMIT}s")
+            # Lấy ra ô hiện tại và danh sách hướng di chuyển từ hàng đợi
+            node = q.get()
+            (pt, path) = (node[0], node[1])
+
+            # Nếu ô hiện tại là đích, trả về danh sách hướng di chuyển
+            if pt == dest:
                 return path
-            for move in self.get_possible_moves(current_matrix):
-                new_matrix, newTempX, newTempY = self.perform_move(current_matrix, move, tempX, tempY)
-                new_matrix_tuple = tuple(tuple(row) for row in new_matrix)
-                if new_matrix_tuple not in visited:
-                    visited.add(new_matrix_tuple)
-                    new_path = path + [move]
-                    queue.append((new_matrix, new_path, newTempX, newTempY))
+
+            # Lấy ra tọa độ của ô hiện tại
+            (row, col) = (pt[0], pt[1])
+
+            # Kiểm tra tất cả các ô xung quanh ô hiện tại và đưa chúng vào hàng đợi
+            directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
+            for d in directions:
+                newRow, newCol = row + d[0], col + d[1]
+
+                if self.isValid(mat, visited, newRow, newCol):
+                    visited[newRow][newCol] = True
+                    q.put(((newRow, newCol), path + [d[2]]))
+
+        # Nếu không tìm thấy đường đi, trả về None
+        return None
         
     def DFS(self,depth_limit):       
         def dfs_recursive(current_state, path, tempX,tempY,depth):
@@ -107,14 +135,21 @@ class Algorithm:
                 return result
     
 # Call method
-# X = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
-# Y =  [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
+# X = [340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, 285]
+# Y =  [305, 305, 305, 305, 305, 305, 305, 305, 305, 305, 305, 305]
 
-# food_x = 250
-# food_y = 250
+# food_x = 220
+# food_y = 110
 # #solution = Algorithm(X, Y, food_x, food_y).DFS(10)
-# #solution = Algorithm(X, Y, food_x, food_y).BFS()
+# solution = Algorithm(X, Y, food_x, food_y).BFS()
 # print(solution)
 
-#dfs ['left', 'left', 'down', 'right', 'down', 'down', 'down', 'down', 'down']
-#bfs ['left', 'down', 'down', 'down', 'down', 'down', 'down']
+'''
+deque(['left', 'left', 'left', 'left', 'left', 'left',
+'left', 'left', 'left', 'left', 'left', 'left', 'left',
+'left', 'left', 'left', 'left', 'left', 'left', 'left', 
+'left', 'left', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 
+'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up',
+'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up',
+'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up'])
+'''

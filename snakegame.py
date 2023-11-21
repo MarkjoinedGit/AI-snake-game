@@ -35,7 +35,6 @@ class Game:
         self.sub_algorithm_rect = self.sub_menu_surf.get_rect(topleft=(300, 48))
         self.menu_mode = True
 
-        
         #borders
         self.border_horizontal_top = pygame.Surface((WIDTH_BORDER_BOARD, HEIGHT_BORDER_BOARD))
         self.border_horizontal_top.fill(BODER_COLOR)
@@ -102,6 +101,11 @@ class Game:
                 return True
         return False
 
+    def create_ValidFood(self):
+        self.food.move()
+        while self.food.x in self.snake.x and self.food.y in self.snake.y:
+            self.food.move()
+
     def render_background(self):
         self.surface.fill('black')
         bg = BACKGROUND_IMG.convert_alpha()
@@ -113,10 +117,10 @@ class Game:
         self.snake.walk()
         self.display_score()
         pygame.display.flip()
-        # print("-----------------------------------------------------------")
-        # print(self.snake.x,self.snake.y,sep='\n')
-        # print("Food: ",(self.food.x,self.food.y))
-        # print(self.actions)
+        print("-----------------------------------------------------------")
+        print(self.snake.x,self.snake.y,sep='\n')
+        print("Food: ",(self.food.x,self.food.y))
+        print(self.actions)
         self.check_collision_algorithm()
                     
     def play_basic(self):
@@ -147,22 +151,29 @@ class Game:
                 raise "Collision Occurred"
     
     def GreedyAlgorithm(self):
-        self.actions = deque(Greedy(Node(self.snake.x,self.snake.y,self.food.x,self.food.y)).find_pos_greedy() )
-    
+        self.actions = deque(Greedy(Node(self.snake.x,self.snake.y,self.food.x,self.food.y)).find_pos_greedy())
+    def BFSAlgorithm(self):
+        self.actions = deque(Algorithm(self.snake.x,self.snake.y,self.food.x,self.food.y).BFS())
     def check_collision_algorithm(self):
         if len(self.actions)==0:      
             print("eat")
             self.play_sound("ding")
-            self.snake.increase_length()   
-            checking=True
-            while checking:    
-                try:    
-                    self.food.move()   
-                    self.GreedyAlgorithm()
-                    checking=False
-                except TimeoutError as e:
-                    print(e)
-                    self.food.move()   
+            self.snake.increase_length()
+            # self.food.move()     
+            self.create_ValidFood()
+            self.BFSAlgorithm() 
+            #self.GreedyAlgorithm()
+    
+            # checking=True
+            # while checking:    
+            #     try:
+            #         self.food.move()     
+            #         self.BFSAlgorithm()  
+            #         #self.GreedyAlgorithm()
+            #         checking=False
+            #     except TimeoutError as e:
+            #         print(e)
+            #         self.food.move()   
         if self.snake.x[0] <= CELL_SIZE or self.snake.x[0]>= WIDTH_BOARD-CELL_SIZE or self.snake.y[0] <= CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]>= HEIGHT_BOARD-CELL_SIZE:
             print("Collision with Obstacle")
             self.play_sound('crash')
@@ -232,9 +243,8 @@ class Game:
     def run_algorithm(self):
         running = True
         pause = False
-        #self.actions = deque(['left', 'left', 'down', 'right', 'down', 'down', 'down', 'down', 'down'])
-        # self.actions = deque(BFS_PATH(self.snake.x,self.snake.y,self.food.x,self.food.y).bfs())
-        self.GreedyAlgorithm()
+        self.BFSAlgorithm()
+        #self.GreedyAlgorithm()
         while running:
             if(len(self.actions)>0):        
                 move = self.actions.popleft()
@@ -282,6 +292,9 @@ class Game:
                     pygame.display.flip()
             except Exception as e:
                 print(e)
+                print("----------------------------ERROR-------------------------")
+                print(self.snake.x,self.snake.y,sep='\n')
+                print("Food: ",(self.food.x,self.food.y))
                 self.show_game_over()
                 pause = True
                 self.reset()

@@ -49,8 +49,7 @@ class Greedy:
 
         snakeX = np.roll(snakeX, 1)
         snakeY = np.roll(snakeY, 1)
-        
-        print(move)
+    
         speed = 5
         if move == LEFT :
             snakeY[0] = head_y
@@ -80,10 +79,6 @@ class Greedy:
     def find_pos_greedy(self):
         directs = []
         while not (self.snake_x == self.food_x and self.snake_y == self.food_y):
-            print("đầu: ", end='')
-            print(self.snake_y, self.snake_x)
-            print("thức ăn: ", end='')
-            print(self.food_y, self.food_x)
             direct = self.greedy_direct()
             directs.append(direct)
             if self.dist([self.snake_y, self.snake_x], [self.food_y, self.food_x]) <=1:
@@ -93,35 +88,22 @@ class Greedy:
         return directs
 
 
-# OBSTACLE = -2
-# FOOD = -1
-# HEAD = 1
-# EMPTY = 0
 
-# foodX = 600
-# foodY = 550
-# snakeY = [610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610]
-# snakeX = [505, 500, 495, 490, 485, 480, 475, 470, 465, 460, 455, 450, 445, 440, 435]
-# greedy = Greedy(Node(snakeX,snakeY,foodX,foodY))
-# state = greedy.snake_state
+foodX = 580
+foodY = 150
+snakeX = [775, 775, 770, 765, 760, 755, 750, 745, 740, 735, 730, 725, 720, 715, 710, 705, 700, 695, 690, 685, 680, 675, 670, 665, 660, 655, 650, 645, 640, 635, 630, 625, 620, 615, 610, 605, 600, 595, 590, 585, 580, 575, 570, 565]  
+snakeY = [600, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595] 
+greedy = Greedy(Node(snakeX,snakeY,foodX,foodY))
+state = greedy.snake_state
 
-# # print(greedy.snake_x)
-# # print(greedy.snake_y)
-# # print(greedy.food_x)
-# # print(greedy.food_y)
-# # '''
-# # 64
-# # 50
-# # 49
-# # 49
-# # '''
-# start_time = time.time()
-# # print(self.snake_y, self.snake_x)
-# print(greedy.find_pos_greedy()) 
 
-# end_time = time.time()
+start_time = time.time()
+# print(self.snake_y, self.snake_x)
+print(greedy.find_pos_greedy()) 
 
-# # Tính thời gian chạy bằng cách lấy hiệu của thời điểm kết thúc và thời điểm bắt đầu
-# elapsed_time = end_time - start_time
-# print(f"Thời gian chạy: {elapsed_time} giây")
+end_time = time.time()
+
+# Tính thời gian chạy bằng cách lấy hiệu của thời điểm kết thúc và thời điểm bắt đầu
+elapsed_time = end_time - start_time
+print(f"Thời gian chạy: {elapsed_time} giây")
 

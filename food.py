@@ -16,3 +16,4 @@ class Food:
     def move(self):
         self.x = random.randint(10,(WIDTH_BOARD-CELL_SIZE*10)//CELL_SIZE)*CELL_SIZE
         self.y = random.randint((HEIGHT_NAVBAR+CELL_SIZE*10)//CELL_SIZE,(HEIGHT_BOARD-CELL_SIZE*10)//CELL_SIZE)*CELL_SIZE
+        
