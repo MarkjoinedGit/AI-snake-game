@@ -37,6 +37,10 @@ class Greedy:
             # Không có hướng di chuyển hợp lệ
             return None
     
+    def dist(self,state, goal):
+        dist = abs(goal[0] - state[0]) + abs(goal[1] - state[1])
+        return dist
+    
     def move(self, move):
         snakeX = self.snake_node.snakeX
         snakeY = self.snake_node.snakeY
