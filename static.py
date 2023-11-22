@@ -23,6 +23,8 @@ SNAKE_HEAD_IMG = {
 
 BACKGROUND_IMG=pygame.image.load(r'assets\background.png')
 
+SIMULATION_IMG=pygame.image.load(r'assets\simulation.png')
+
 #MENU
 
 BLACK = (0, 0, 0)

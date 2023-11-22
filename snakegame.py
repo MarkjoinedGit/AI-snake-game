@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 from pygame.locals import *
 from snake import *
 from food import *
@@ -27,7 +28,9 @@ class Game:
         self.clock = pygame.time.Clock()
         
         self.actions = deque([])
-        
+        self.simulations=[]
+        self.simulationImg=SIMULATION_IMG.convert_alpha()
+        self.simulationImg_rect = self.simulationImg.get_rect()
         #menu
         self.menu_surf = pygame.image.load(r'assets\menu\menu-bg.png').convert()
         self.menu_rect = self.menu_surf.get_rect(topleft = (0, 47.73))
@@ -114,15 +117,18 @@ class Game:
 
     def play_algorithm(self):
         self.draw_display()
-        self.food.draw()
+        self.food.draw() 
         self.snake.walk()
+        
         self.display_score()
         pygame.display.flip()
-        print("-----------------------------------------------------------")
-        print(self.snake.x,self.snake.y,sep='\n')
-        print("Food: ",(self.food.x,self.food.y))
-        print(self.actions)
-        self.check_collision_algorithm()
+        # print("-----------------------------------------------------------")
+        # print(self.snake.x,self.snake.y,sep='\n')
+        # print("Food: ",(self.food.x,self.food.y))
+        # print(self.actions)
+        self.check_collision_algorithm() 
+            
+        
                     
     def play_basic(self):
         self.draw_display()
@@ -152,23 +158,35 @@ class Game:
                 raise "Collision Occurred"
     
     def GreedyAlgorithm(self):
-        self.actions = deque(Greedy(Node(self.snake.x,self.snake.y,self.food.x,self.food.y)).find_pos_greedy())
-    
+        greedy= Greedy(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
+        self.actions = deque(greedy.find_pos_greedy())
+        self.simulations= greedy.moved_pos
+        self.draw_Simulations()
     def BFSAlgorithm(self):
-        self.actions = deque(BFS(self.snake.x,self.snake.y,self.food.x,self.food.y).bfs())
-    
+        bfs = BFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        self.actions = deque(bfs.bfs())
+        self.simulations= bfs.moved_pos
+        self.draw_Simulations()
     def UCSAlgorithm(self):
         self.actions = deque(UCS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y)).ucs_snake_game())
-        
+    
+    def draw_Simulations(self):
+        for simu in self.simulations:
+            simu_posGame = np.array(simu)*CELL_SIZE
+            self.simulationImg_rect.center = tuple(simu_posGame)
+            self.surface.blit(self.simulationImg, self.simulationImg_rect)
+            pygame.display.flip()
+    
     def check_collision_algorithm(self):
         if len(self.actions)==0:      
             print("eat")
             self.play_sound("ding")
             self.snake.increase_length()   
             self.create_ValidFood()
+            self.food.draw() 
             #self.BFSAlgorithm() 
-            self.UCSAlgorithm()
-            #self.GreedyAlgorithm()
+            #self.UCSAlgorithm()
+            self.GreedyAlgorithm()
     
         if self.snake.x[0] <= CELL_SIZE or self.snake.x[0]>= WIDTH_BOARD-CELL_SIZE or self.snake.y[0] <= CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]>= HEIGHT_BOARD-CELL_SIZE:
             print("Collision with Obstacle")
@@ -179,6 +197,7 @@ class Game:
                 self.play_sound('crash')
                 print("Collision with itself")
                 raise "Collision Occurred"       
+            
     def draw_display(self):
         self.surface.fill('black')
         self.render_background() 
@@ -240,8 +259,9 @@ class Game:
         running = True
         pause = False
         #self.BFSAlgorithm()
-        self.UCSAlgorithm()
-        #self.GreedyAlgorithm()
+        #self.UCSAlgorithm()
+        self.GreedyAlgorithm()
+        
         while running:
             if(len(self.actions)>0):        
                 move = self.actions.popleft()

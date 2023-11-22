@@ -14,7 +14,7 @@ class BFS:
         self.food_y = food_y
         self.node = Node(self.X, self.Y, self.food_x, self.food_y)
         self.matrix_state = self.node.CreateState()
-            
+        self.moved_pos=[]    
     def get_possible_moves(self, matrix):
         moves = []
         head_pos = np.where(matrix==1)
@@ -96,6 +96,7 @@ class BFS:
                 newRow, newCol = row + d[0], col + d[1]
 
                 if self.isValid(mat, visited, newRow, newCol):
+                    self.moved_pos.append((newCol,newRow))
                     visited[newRow][newCol] = True
                     q.put(((newRow, newCol), path + [d[2]]))
 
@@ -109,8 +110,10 @@ class BFS:
 # food_x = 220
 # food_y = 110
 # #solution = Algorithm(X, Y, food_x, food_y).DFS(10)
-# solution = Algorithm(X, Y, food_x, food_y).BFS()
+# b=BFS(X, Y, food_x, food_y)
+# solution = b.bfs()
 # print(solution)
+# print(b.moved_pos)
 
 '''
 deque(['left', 'left', 'left', 'left', 'left', 'left',

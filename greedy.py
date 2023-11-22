@@ -14,6 +14,7 @@ class Greedy:
         self.snake_y = head_snake_pos[0][0]
         self.food_x = food_pos[1][0]
         self.food_y  = food_pos[0][0]
+        self.moved_pos=[]
     
     def greedy_direct(self):
         possible_moves = []
@@ -27,6 +28,7 @@ class Greedy:
             if self.snake_state[next_y][next_x] == FOOD:
                 return direction_mapping[(dx, dy)];
             if self.snake_state[next_y][next_x] == EMPTY:
+                self.moved_pos.append((next_x,next_y))
                 distance_to_food = abs(next_x - self.food_x) + abs(next_y - self.food_y)
                 possible_moves.append((distance_to_food, direction_mapping[(dy, dx)]))
         if possible_moves:
@@ -89,21 +91,20 @@ class Greedy:
 
 
 
-foodX = 580
-foodY = 150
-snakeX = [775, 775, 770, 765, 760, 755, 750, 745, 740, 735, 730, 725, 720, 715, 710, 705, 700, 695, 690, 685, 680, 675, 670, 665, 660, 655, 650, 645, 640, 635, 630, 625, 620, 615, 610, 605, 600, 595, 590, 585, 580, 575, 570, 565]  
-snakeY = [600, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595] 
-greedy = Greedy(Node(snakeX,snakeY,foodX,foodY))
-state = greedy.snake_state
+# foodX = 580
+# foodY = 150
+# snakeX = [775, 775, 770, 765, 760, 755, 750, 745, 740, 735, 730, 725, 720, 715, 710, 705, 700, 695, 690, 685, 680, 675, 670, 665, 660, 655, 650, 645, 640, 635, 630, 625, 620, 615, 610, 605, 600, 595, 590, 585, 580, 575, 570, 565]  
+# snakeY = [600, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595] 
+# greedy = Greedy(Node(snakeX,snakeY,foodX,foodY))
+# state = greedy.snake_state
 
 
-start_time = time.time()
-# print(self.snake_y, self.snake_x)
-print(greedy.find_pos_greedy()) 
+# start_time = time.time()
+# print(greedy.find_pos_greedy()) 
+# print(greedy.moved_pos)
+# end_time = time.time()
 
-end_time = time.time()
-
-# Tính thời gian chạy bằng cách lấy hiệu của thời điểm kết thúc và thời điểm bắt đầu
-elapsed_time = end_time - start_time
-print(f"Thời gian chạy: {elapsed_time} giây")
+# # Tính thời gian chạy bằng cách lấy hiệu của thời điểm kết thúc và thời điểm bắt đầu
+# elapsed_time = end_time - start_time
+# print(f"Thời gian chạy: {elapsed_time} giây")
 
