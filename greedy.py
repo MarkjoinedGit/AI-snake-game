@@ -52,7 +52,7 @@ class Greedy:
         snakeX = np.roll(snakeX, 1)
         snakeY = np.roll(snakeY, 1)
     
-        speed = 5
+        speed = CELL_SIZE
         if move == LEFT :
             snakeY[0] = head_y
             snakeX[0] = head_x - speed

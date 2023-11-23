@@ -9,7 +9,7 @@ from collections import deque
 from bfs import *
 from greedy import *
 from ucs import *
-
+from dfs import *
 class Game:
     def __init__(self):
         pygame.init()
@@ -27,6 +27,7 @@ class Game:
         self.play_background_music()
         self.clock = pygame.time.Clock()
         
+        self.algorithm= NO_ALGORITHM
         self.actions = deque([])
         self.simulations=[]
         self.simulationImg=SIMULATION_IMG.convert_alpha()
@@ -127,9 +128,7 @@ class Game:
         # print("Food: ",(self.food.x,self.food.y))
         # print(self.actions)
         self.check_collision_algorithm() 
-            
-        
-                    
+                             
     def play_basic(self):
         self.draw_display()
         self.food.draw()
@@ -167,6 +166,11 @@ class Game:
         self.actions = deque(bfs.bfs())
         self.simulations= bfs.moved_pos
         self.draw_Simulations()
+    def DFSAlgorithm(self):
+        dfs = DFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        self.actions = deque(dfs.dfs())
+        self.simulations= dfs.moved_pos
+        self.draw_Simulations()
     def UCSAlgorithm(self):
         self.actions = deque(UCS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y)).ucs_snake_game())
     
@@ -184,10 +188,7 @@ class Game:
             self.snake.increase_length()   
             self.create_ValidFood()
             self.food.draw() 
-            #self.BFSAlgorithm() 
-            #self.UCSAlgorithm()
-            self.GreedyAlgorithm()
-    
+            self.choose_Algorithm()
         if self.snake.x[0] <= CELL_SIZE or self.snake.x[0]>= WIDTH_BOARD-CELL_SIZE or self.snake.y[0] <= CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]>= HEIGHT_BOARD-CELL_SIZE:
             print("Collision with Obstacle")
             self.play_sound('crash')
@@ -255,13 +256,20 @@ class Game:
             if self.snake.direction==LEFT or self.snake.direction==RIGHT:
                 self.snake.move_down()
     
+    def choose_Algorithm(self):
+        if self.algorithm == GREEDY_ALGORITHM:
+            self.GreedyAlgorithm()
+        elif self.algorithm == BFS_ALGORITHM:
+            self.BFSAlgorithm()
+        elif self.algorithm == UCS_ALGORITHM:
+            self.UCSAlgorithm()
+        elif self.algorithm == DFS_ALGORITHM:
+            self.DFSAlgorithm()
+    
     def run_algorithm(self):
         running = True
         pause = False
-        #self.BFSAlgorithm()
-        #self.UCSAlgorithm()
-        self.GreedyAlgorithm()
-        
+        self.choose_Algorithm()
         while running:
             if(len(self.actions)>0):        
                 move = self.actions.popleft()
@@ -385,5 +393,6 @@ class Game:
             self.clock.tick(60)
 
     def start(self):
+        self.algorithm=BFS_ALGORITHM
         self.run_algorithm()
         #self.run_basic()

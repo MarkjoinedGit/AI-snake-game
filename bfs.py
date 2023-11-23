@@ -57,8 +57,10 @@ class BFS:
             tempX[0] = val_x  
         new_matrix = Node(tempX, tempY, self.food_x, self.food_x).CreateState()
         return new_matrix, tempX, tempY
+    
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and (mat[row][col] != -2) and not visited[row][col]
+    
     def bfs(self):
         mat = self.matrix_state
         src = ((self.Y[0]//CELL_SIZE)-1, (self.X[0]//CELL_SIZE)-1)
