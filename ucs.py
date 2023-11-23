@@ -14,6 +14,8 @@ class UCS:
         self.snake_y = head_snake_pos[0][0]
         self.food_x = food_pos[1][0]
         self.food_y  = food_pos[0][0]
+        
+        self.moved_pos = []
 
     def is_goal(self,y, x):
         return self.food_y == y and self.food_x == x
@@ -82,6 +84,13 @@ class UCS:
         dist = abs(goal[0] - state[0]) + abs(goal[1] - state[1])
         return dist
 
+    def in_board(self, y, x):
+        board_height = len(self.snake_state)
+        board_width = len(self.snake_state[0]) if board_height > 0 else 0
+
+       # Kiểm tra xem tọa độ (y, x) có nằm trong phạm vi của bảng trò chơi hay không
+        return 0 <= y < board_height and 0 <= x < board_width
+
     def ucs_snake_game(self):
         directs = []
         
@@ -90,7 +99,7 @@ class UCS:
         visited = set()
         
         while priority_queue:
-            cost, (x, y, path) = heapq.heappop(priority_queue)
+            cost, (y, x, path) = heapq.heappop(priority_queue)
             if (x, y) not in visited:
                 visited.add((y, x))
                 path = path + [(y, x)]
@@ -99,18 +108,56 @@ class UCS:
                 # print(directions)
                 direction_mapping = {(0, 1): RIGHT, (0, -1): LEFT, (1, 0): DOWN, (-1, 0): UP}
                 direction_mapping = {key: value for key, value in direction_mapping.items() if key in directions}
+                if(directions == {}):
+                    print("not")
+                leng = len(directions)
+                # print(directions)
                 for dy, dx in directions:
                     new_x, new_y = x + dx, y + dy
-                    if self.is_valid(self.snake_state[new_y,new_x]) and (new_y, new_x) not in visited:
-                        heapq.heappush(priority_queue, (cost + 1, (new_y, new_x, path)))
-                        directs.append(direction_mapping[(dy, dx)])
-                        if self.dist([self.snake_y, self.snake_x], [self.food_y, self.food_x]) <=1:
-                            return directs
-                        snake_new_node = self.move(direction_mapping[(dy, dx)])
-                        self.updateNode(snake_new_node)
+                    # print(new_y,new_x)
+                    # print(new_y, new_x)
+                    if self.in_board(new_y, new_x):
+                        if self.is_valid(self.snake_state[new_y,new_x]):
+                            self.moved_pos.append([new_y, new_x])
+                            heapq.heappush(priority_queue, (cost + 1, (new_y, new_x, path)))
+                            directs.append(direction_mapping[(dy, dx)])
+                            if self.dist([self.snake_y, self.snake_x], [self.food_y, self.food_x]) <=1:
+                                return directs
+                            snake_new_node = self.move(direction_mapping[(dy, dx)])
+                            self.updateNode(snake_new_node)
+                            leng -=1
+                if leng == len(directions):
+                    print("----------------------------")
         return None
     # Hàm kiểm tra xem điểm có nằm trong biên của ma trận không
     
+
+# foodX = 580
+# foodY = 150
+# snakeX = [775, 775, 770, 765, 760, 755, 750, 745, 740, 735, 730, 725, 720, 715, 710, 705, 700, 695, 690, 685, 680, 675, 670, 665, 660, 655, 650, 645, 640, 635, 630, 625, 620, 615, 610, 605, 600, 595, 590, 585, 580, 575, 570, 565]  
+# snakeY = [600, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595] 
+# greedy = UCS(Node(snakeX,snakeY,foodX,foodY))
+# state = greedy.snake_state
+
+# print(greedy.food_y,greedy.food_x)
+# print(greedy.snake_y, greedy.snake_x)
+
+# start_time = time.time()
+# # print(self.snake_y, self.snake_x)
+
+# print(greedy.ucs_snake_game()) 
+# # print(greedy.moved_pos) 
+
+
+# end_time = time.time()
+
+# # Tính thời gian chạy bằng cách lấy hiệu của thời điểm kết thúc và thời điểm bắt đầu
+# elapsed_time = end_time - start_time
+# print(f"Thời gian chạy: {elapsed_time} giây")
+# snakeY = [955, 950, 945, 940, 935, 930, 925, 920, 915, 910, 905, 900]
+# snakeX = [370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 365]
+# foodY = 105
+# foodX = 640
 
 
 # foodX = 300
