@@ -3,7 +3,7 @@ import random
 class Food:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = FOOD_IMG[0].convert_alpha()
+        self.image = FOOD_IMG[1].convert_alpha()
         self.rect = self.image.get_rect()
         self.x = CELL_SIZE*50
         self.y = CELL_SIZE*50        

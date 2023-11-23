@@ -55,16 +55,15 @@ class Snake:
         self.draw()
 
     def draw(self):
-        d=0
         for i in range(self.length-1,-1,-1):         
             if self.direction==LEFT:                
-                self.head_rect.center = (self.x[i]-d, self.y[i])        
+                self.head_rect.center = (self.x[i], self.y[i])        
             elif self.direction==RIGHT:           
-                self.head_rect.center = (self.x[i]+d, self.y[i])        
+                self.head_rect.center = (self.x[i], self.y[i])        
             elif self.direction==UP:               
-                self.head_rect.center = (self.x[i], self.y[i]-d)        
+                self.head_rect.center = (self.x[i], self.y[i])        
             elif self.direction==DOWN:
-                self.head_rect.center = (self.x[i], self.y[i]+d)       
+                self.head_rect.center = (self.x[i], self.y[i])       
                              
             if(i==0):                  
                 self.parent_screen.blit(self.head, self.head_rect)

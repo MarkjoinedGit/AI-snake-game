@@ -1,24 +1,26 @@
 import pygame
 
+SIZE_SNAKE_IMG=(15,15)
+SIZE_FOOD_IMG=(10,10)
+
 
 FOOD_IMG = (
-    pygame.image.load(r'assets\foods\food-0.png'),
-    pygame.image.load(r'assets\foods\food-1.png'),
-    pygame.image.load(r'assets\foods\food-2.png'),
-    pygame.image.load(r'assets\foods\food-3.png'),
-    pygame.image.load(r'assets\foods\food-4.png'),
-    pygame.image.load(r'assets\foods\food-5.png'),
-    pygame.image.load(r'assets\foods\food-6.png')   
+    pygame.transform.scale(pygame.image.load(r'assets\foods\food-0.png'),SIZE_FOOD_IMG),
+    pygame.transform.scale(pygame.image.load(r'assets\foods\food-1.png'),SIZE_FOOD_IMG),
+    pygame.transform.scale(pygame.image.load(r'assets\foods\food-2.png'),SIZE_FOOD_IMG),
+    pygame.transform.scale(pygame.image.load(r'assets\foods\food-3.png'),SIZE_FOOD_IMG),
+    pygame.transform.scale(pygame.image.load(r'assets\foods\food-4.png'),SIZE_FOOD_IMG),
+    pygame.transform.scale(pygame.image.load(r'assets\foods\food-5.png'),SIZE_FOOD_IMG),
+    pygame.transform.scale(pygame.image.load(r'assets\foods\food-6.png'),SIZE_FOOD_IMG)   
 )
 
-
-SNAKE_BLOCK_IMG = pygame.image.load(r'assets\snake\body-snake-blue.png')
+SNAKE_BLOCK_IMG = pygame.transform.scale(pygame.image.load(r'assets\snake\body-snake-blue.png'), SIZE_SNAKE_IMG)
 
 SNAKE_HEAD_IMG = {
-    'left':pygame.image.load(r'assets\snake\head-snake-blue-left.png'),
-    'right':pygame.image.load(r'assets\snake\head-snake-blue-right.png'),
-    'up':pygame.image.load(r'assets\snake\head-snake-blue-up.png'),
-    'down':pygame.image.load(r'assets\snake\head-snake-blue-down.png')
+    'left': pygame.transform.scale(pygame.image.load(r'assets\snake\head-snake-blue-left.png'), SIZE_SNAKE_IMG),
+    'right':pygame.transform.scale(pygame.image.load(r'assets\snake\head-snake-blue-right.png'), SIZE_SNAKE_IMG),
+    'up':pygame.transform.scale(pygame.image.load(r'assets\snake\head-snake-blue-up.png'), SIZE_SNAKE_IMG),
+    'down':pygame.transform.scale(pygame.image.load(r'assets\snake\head-snake-blue-down.png'), SIZE_SNAKE_IMG),
 }
 
 BACKGROUND_IMG=pygame.image.load(r'assets\background.png')
