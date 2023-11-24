@@ -14,7 +14,7 @@ class Greedy:
         self.snake_y = head_snake_pos[0][0]
         self.food_x = food_pos[1][0]
         self.food_y  = food_pos[0][0]
-        self.moved_pos=[]
+        self.moved_pos=set()
     
     def greedy_direct(self):
         possible_moves = []
@@ -28,7 +28,7 @@ class Greedy:
             if self.snake_state[next_y][next_x] == FOOD:
                 return direction_mapping[(dx, dy)]
             if self.snake_state[next_y][next_x] == EMPTY:
-                self.moved_pos.append((next_x,next_y))
+                self.moved_pos.add((next_x,next_y))
                 distance_to_food = abs(next_x - self.food_x) + abs(next_y - self.food_y)
                 possible_moves.append((distance_to_food, direction_mapping[(dy, dx)]))
         if possible_moves:
@@ -80,7 +80,8 @@ class Greedy:
 
     def find_pos_greedy(self):
         directs = []
-        while not (self.snake_x == self.food_x and self.snake_y == self.food_y):
+        #while not (self.snake_x == self.food_x and self.snake_y == self.food_y):
+        while not self.is_collision(self.snake_x,self.snake_y, self.food_x, self.food_y):
             direct = self.greedy_direct()
             directs.append(direct)
             if self.dist([self.snake_y, self.snake_x], [self.food_y, self.food_x]) <=1:
@@ -88,7 +89,13 @@ class Greedy:
             snake_new_node = self.move(direct)
             self.updateNode(snake_new_node)
         return directs
-
+    
+    def is_collision(self, x1, y1, x2, y2,d=0):
+        if x1 >= x2-d and x1 < x2 + CELL_SIZE+d:
+            if y1 >= y2-d and y1 <y2 + CELL_SIZE+d:
+                return True
+        return False
+    
 # snakeX = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
 # snakeY = [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
 # foodX = 250

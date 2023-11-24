@@ -14,7 +14,7 @@ class BFS:
         self.food_y = food_y
         self.node = Node(self.X, self.Y, self.food_x, self.food_y)
         self.matrix_state = self.node.CreateState()
-        self.moved_pos=[]    
+        self.moved_pos=[]  
     def get_possible_moves(self, matrix):
         moves = []
         head_pos = np.where(matrix==1)
@@ -59,7 +59,7 @@ class BFS:
         return new_matrix, tempX, tempY
     
     def isValid(sefl, mat, visited, row, col):
-        return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and (mat[row][col] != -2) and not visited[row][col]
+        return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
     
     def bfs(self):
         mat = self.matrix_state
@@ -86,9 +86,12 @@ class BFS:
             (pt, path) = (node[0], node[1])
 
             # Nếu ô hiện tại là đích, trả về danh sách hướng di chuyển
-            if pt == dest:
+            # if pt == dest:
+            #     print("bfs: ",pt,dest)
+            #     return path
+            if self.is_collision(pt[0],pt[1],dest[0],dest[1]):
+                print("bfs: ",pt,dest)
                 return path
-
             # Lấy ra tọa độ của ô hiện tại
             (row, col) = (pt[0], pt[1])
 
@@ -96,7 +99,6 @@ class BFS:
             directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
             for d in directions:
                 newRow, newCol = row + d[0], col + d[1]
-
                 if self.isValid(mat, visited, newRow, newCol):
                     self.moved_pos.append((newCol,newRow))
                     visited[newRow][newCol] = True
@@ -105,6 +107,11 @@ class BFS:
         # Nếu không tìm thấy đường đi, trả về None
         return None
     
+    def is_collision(self, x1, y1, x2, y2,d=0):
+        if x1 >= x2-d and x1 < x2 + 1+d:
+            if y1 >= y2-d and y1 <y2 + 1+d:
+                return True
+        return False
 # Call method
 # X = [340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, 285]
 # Y =  [305, 305, 305, 305, 305, 305, 305, 305, 305, 305, 305, 305]

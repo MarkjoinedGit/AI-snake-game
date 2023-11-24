@@ -15,7 +15,7 @@ class UCS:
         self.food_x = food_pos[1][0]
         self.food_y  = food_pos[0][0]
         
-        self.moved_pos = []
+        self.moved_pos = set()
 
     def is_goal(self,y, x):
         return self.food_y == y and self.food_x == x
@@ -118,7 +118,7 @@ class UCS:
                     # print(new_y, new_x)
                     if self.in_board(new_y, new_x):
                         if self.is_valid(self.snake_state[new_y,new_x]):
-                            self.moved_pos.append((new_x, new_y))
+                            self.moved_pos.add((new_x, new_y))
                             heapq.heappush(priority_queue, (cost + 1, (new_y, new_x, path)))
                             directs.append(direction_mapping[(dy, dx)])
                             if self.dist([self.snake_y, self.snake_x], [self.food_y, self.food_x]) <=1:

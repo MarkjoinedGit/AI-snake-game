@@ -10,6 +10,8 @@ from bfs import *
 from greedy import *
 from ucs import *
 from dfs import *
+from a_star import *
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -29,7 +31,7 @@ class Game:
         
         self.algorithm= NO_ALGORITHM
         self.actions = deque([])
-        self.simulations=deque([])
+        self.simulations=[]
         self.simulationImg=SIMULATION_IMG.convert_alpha()
         self.simulationImg_rect = self.simulationImg.get_rect()
         #menu
@@ -123,11 +125,15 @@ class Game:
         
         self.display_score()
         pygame.display.flip()
-        # print("-----------------------------------------------------------")
+        
+        self.check_collision_algorithm() 
+        
+        # print("----------------------------STATE-------------------------")
         # print(self.snake.x,self.snake.y,sep='\n')
         # print("Food: ",(self.food.x,self.food.y))
         # print(self.actions)
-        self.check_collision_algorithm() 
+        if len(self.actions)==0:
+            self.choose_Algorithm()
                              
     def play_basic(self):
         self.draw_display()
@@ -159,22 +165,31 @@ class Game:
     def GreedyAlgorithm(self):
         greedy= Greedy(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
         self.actions = deque(greedy.find_pos_greedy())
-        self.simulations= deque(greedy.moved_pos)
+        self.simulations=greedy.moved_pos
         self.draw_Simulations()
+    
     def BFSAlgorithm(self):
         bfs = BFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
         self.actions = deque(bfs.bfs())
-        self.simulations= deque(bfs.moved_pos)
+        self.simulations= bfs.moved_pos
         self.draw_Simulations()
+    
     def DFSAlgorithm(self):
         dfs = DFS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
         self.actions = deque(dfs.find_pos_dfs())
-        self.simulations= deque(dfs.moved_pos)
+        self.simulations= dfs.moved_pos
         self.draw_Simulations()
+    
     def UCSAlgorithm(self):
         ucs=UCS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
         self.actions = deque(ucs.ucs_snake_game())
-        self.simulations= deque(ucs.moved_pos)
+        self.simulations= ucs.moved_pos
+        self.draw_Simulations()
+        
+    def AStarAlgorithm(self):
+        ucs=UCS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
+        self.actions = deque(ucs.ucs_snake_game())
+        self.simulations= ucs.moved_pos
         self.draw_Simulations()
     
     def draw_Simulations(self):
@@ -185,14 +200,13 @@ class Game:
             pygame.display.flip()
 
     def check_collision_algorithm(self):
-        if len(self.actions)==0:      
+        if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,0):      
             print("eat")
             self.play_sound("ding")
             self.snake.increase_length()   
             self.create_ValidFood()
             self.food.draw() 
-            self.choose_Algorithm()
-        if self.snake.x[0] <= CELL_SIZE or self.snake.x[0]>= WIDTH_BOARD-CELL_SIZE or self.snake.y[0] <= CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]>= HEIGHT_BOARD-CELL_SIZE:
+        if self.snake.x[0] < CELL_SIZE or self.snake.x[0]> WIDTH_BOARD-CELL_SIZE or self.snake.y[0] < CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]> HEIGHT_BOARD-CELL_SIZE:
             print("Collision with Obstacle")
             self.play_sound('crash')
             raise "Collision Occurred"
@@ -325,6 +339,7 @@ class Game:
                 print("----------------------------ERROR-------------------------")
                 print(self.snake.x,self.snake.y,sep='\n')
                 print("Food: ",(self.food.x,self.food.y))
+                print(self.actions)
                 self.show_game_over()
                 pause = True
                 self.reset()
@@ -398,6 +413,6 @@ class Game:
             self.clock.tick(FPS)
 
     def start(self):
-        self.algorithm=GREEDY_ALGORITHM
+        self.algorithm=BFS_ALGORITHM
         self.run_algorithm()
         #self.run_basic()

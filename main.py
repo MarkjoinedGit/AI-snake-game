@@ -105,8 +105,6 @@ while True:
                 draw_sub_menu(btn_sub_mode_list)         
             elif setting_menu_open:
                 draw_sub_menu(btn_sub_setting_list)
-
-
     else:
         snakegame.Game().start()
         start_game = False
