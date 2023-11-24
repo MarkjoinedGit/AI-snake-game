@@ -1,3 +1,4 @@
+
 import pygame
 
 SIZE_SNAKE_IMG=(15,15)
@@ -67,7 +68,7 @@ HEAD = 1
 OBSTACLE=-2
 
 TIME_LIMIT=0.2
-DEPTH_LIMIT = 50
+DEPTH_LIMIT = 10
 
 DIRECTIONS = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
 

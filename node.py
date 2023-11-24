@@ -31,3 +31,27 @@ class Node:
         for i in range(NAV_H):
             self.matrix[i,:W] = OBSTACLE
             self.matrix[i,:W] = OBSTACLE
+    def move(self, move):
+        head_x, head_y = self.snakeX[0], self.snakeY[0]
+
+        self.snakeX = np.roll(self.snakeX, 1)
+        self.snakeY = np.roll(self.snakeY, 1)
+    
+        speed = CELL_SIZE
+        if move == LEFT :
+            self.snakeY[0] = head_y
+            self.snakeX[0] = head_x - speed
+        if move == RIGHT:
+            self.snakeY[0] = head_y 
+            self.snakeX[0] = head_x + speed 
+        if move == UP:
+            self.snakeX[0] = head_x
+            self.snakeY[0] = head_y - speed
+        if move == DOWN:
+            self.snakeX[0] = head_x 
+            self.snakeY[0] = head_y + speed
+        new_node = Node(self.snakeX, self.snakeY, self.foodX, self.foodY)
+        return new_node
+    
+    def dist(self):
+        return abs(self.foodX - self.snakeX[0]) + abs(self.foodY - self.snakeY[0])

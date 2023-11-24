@@ -167,8 +167,8 @@ class Game:
         self.simulations= bfs.moved_pos
         self.draw_Simulations()
     def DFSAlgorithm(self):
-        dfs = DFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
-        self.actions = deque(dfs.dfs())
+        dfs = DFS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
+        self.actions = deque(dfs.find_pos_dfs())
         self.simulations= dfs.moved_pos
         self.draw_Simulations()
     def UCSAlgorithm(self):
@@ -274,6 +274,8 @@ class Game:
         pause = False
         self.choose_Algorithm()
         while running:
+            if self.actions==None:
+                running=False
             if(len(self.actions)>0):        
                 move = self.actions.popleft()
                 self.displayMovement(move)
@@ -396,6 +398,6 @@ class Game:
             self.clock.tick(60)
 
     def start(self):
-        self.algorithm=UCS_ALGORITHM
+        self.algorithm=BFS_ALGORITHM
         self.run_algorithm()
         #self.run_basic()

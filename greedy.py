@@ -23,10 +23,10 @@ class Greedy:
         for dx, dy in directions:
             next_x = self.snake_x + dx
             next_y = self.snake_y + dy
-            if self.snake_state[next_y][next_x] > EMPTY:
+            if self.snake_state[next_y][next_x] > EMPTY or self.snake_state[next_y][next_x] == OBSTACLE:
                 continue
             if self.snake_state[next_y][next_x] == FOOD:
-                return direction_mapping[(dx, dy)];
+                return direction_mapping[(dx, dy)]
             if self.snake_state[next_y][next_x] == EMPTY:
                 self.moved_pos.append((next_x,next_y))
                 distance_to_food = abs(next_x - self.food_x) + abs(next_y - self.food_y)
@@ -89,12 +89,15 @@ class Greedy:
             self.updateNode(snake_new_node)
         return directs
 
+# snakeX = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
+# snakeY = [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
+# foodX = 250
+# foodY = 250
 
-
-# foodX = 580
-# foodY = 150
-# snakeX = [775, 775, 770, 765, 760, 755, 750, 745, 740, 735, 730, 725, 720, 715, 710, 705, 700, 695, 690, 685, 680, 675, 670, 665, 660, 655, 650, 645, 640, 635, 630, 625, 620, 615, 610, 605, 600, 595, 590, 585, 580, 575, 570, 565]  
-# snakeY = [600, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595] 
+# # foodX = 580
+# # foodY = 150
+# # snakeX = [775, 775, 770, 765, 760, 755, 750, 745, 740, 735, 730, 725, 720, 715, 710, 705, 700, 695, 690, 685, 680, 675, 670, 665, 660, 655, 650, 645, 640, 635, 630, 625, 620, 615, 610, 605, 600, 595, 590, 585, 580, 575, 570, 565]  
+# # snakeY = [600, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595] 
 # greedy = Greedy(Node(snakeX,snakeY,foodX,foodY))
 # state = greedy.snake_state
 

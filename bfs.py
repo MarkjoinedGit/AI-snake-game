@@ -108,21 +108,16 @@ class BFS:
 # Call method
 # X = [340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, 285]
 # Y =  [305, 305, 305, 305, 305, 305, 305, 305, 305, 305, 305, 305]
-
 # food_x = 220
 # food_y = 110
+
+# X = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
+# Y = [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
+# food_x = 250
+# food_y = 250
 # #solution = Algorithm(X, Y, food_x, food_y).DFS(10)
 # b=BFS(X, Y, food_x, food_y)
 # solution = b.bfs()
 # print(solution)
 # print(b.moved_pos)
 
-'''
-deque(['left', 'left', 'left', 'left', 'left', 'left',
-'left', 'left', 'left', 'left', 'left', 'left', 'left',
-'left', 'left', 'left', 'left', 'left', 'left', 'left', 
-'left', 'left', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 
-'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up',
-'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up',
-'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up'])
-'''
