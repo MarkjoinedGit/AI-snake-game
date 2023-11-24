@@ -11,11 +11,6 @@ class Node:
         self.snakeY = snakeY
         self.foodX = foodX
         self.foodY = foodY
-        self.direction = None 
-        self.h = 0
-        self.g = 0
-        self.f = 1000000
-        self.parent = None
     
     def getPos_Matrix(self,pos):
         return (pos//CELL_SIZE)-1
@@ -35,29 +30,27 @@ class Node:
         self.matrix[:H, -1] = OBSTACLE
         for i in range(NAV_H):
             self.matrix[i,:W] = OBSTACLE
+            self.matrix[i,:W] = OBSTACLE
     def move(self, move):
         head_x, head_y = self.snakeX[0], self.snakeY[0]
 
-        snakeX=  self.snakeX.copy()
-        snakeY= self.snakeY.copy()
-        snakeX = np.roll(snakeX, 1)
-        snakeY = np.roll(snakeY, 1)
+        self.snakeX = np.roll(self.snakeX, 1)
+        self.snakeY = np.roll(self.snakeY, 1)
     
         speed = CELL_SIZE
         if move == LEFT :
-            snakeY[0] = head_y
-            snakeX[0] = head_x - speed
+            self.snakeY[0] = head_y
+            self.snakeX[0] = head_x - speed
         if move == RIGHT:
-            snakeY[0] = head_y 
-            snakeX[0] = head_x + speed 
+            self.snakeY[0] = head_y 
+            self.snakeX[0] = head_x + speed 
         if move == UP:
-            snakeX[0] = head_x
-            snakeY[0] = head_y - speed
+            self.snakeX[0] = head_x
+            self.snakeY[0] = head_y - speed
         if move == DOWN:
-            snakeX[0] = head_x 
-            snakeY[0] = head_y + speed
-        new_node = Node(snakeX, snakeY, self.foodX, self.foodY)
-        new_node.direction=move
+            self.snakeX[0] = head_x 
+            self.snakeY[0] = head_y + speed
+        new_node = Node(self.snakeX, self.snakeY, self.foodX, self.foodY)
         return new_node
     
     def dist(self):

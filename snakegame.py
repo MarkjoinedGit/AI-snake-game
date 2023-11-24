@@ -175,8 +175,8 @@ class Game:
         self.draw_Simulations()
     
     def DFSAlgorithm(self):
-        dfs = DFS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
-        self.actions = deque(dfs.find_pos_dfs())
+        dfs = DFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        self.actions = deque(dfs.dfs())
         self.simulations= dfs.moved_pos
         self.draw_Simulations()
     
@@ -194,7 +194,7 @@ class Game:
     
     def draw_Simulations(self):
         for simu in self.simulations:
-            simu_posGame = np.array(simu)*CELL_SIZE
+            simu_posGame = (np.array(simu)+1)*CELL_SIZE
             self.simulationImg_rect.center = tuple(simu_posGame)
             self.surface.blit(self.simulationImg, self.simulationImg_rect)
             pygame.display.flip()
@@ -413,6 +413,6 @@ class Game:
             self.clock.tick(FPS)
 
     def start(self):
-        self.algorithm=BFS_ALGORITHM
+        self.algorithm=DFS_ALGORITHM
         self.run_algorithm()
         #self.run_basic()
