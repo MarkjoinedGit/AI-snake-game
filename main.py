@@ -112,7 +112,7 @@ while True:
         start_game = False
 
     pg.display.update()
-    clock.tick(60)
+    clock.tick(FPS)
 
             
 

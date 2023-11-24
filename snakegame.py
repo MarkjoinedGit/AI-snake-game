@@ -29,7 +29,7 @@ class Game:
         
         self.algorithm= NO_ALGORITHM
         self.actions = deque([])
-        self.simulations=[]
+        self.simulations=deque([])
         self.simulationImg=SIMULATION_IMG.convert_alpha()
         self.simulationImg_rect = self.simulationImg.get_rect()
         #menu
@@ -159,22 +159,22 @@ class Game:
     def GreedyAlgorithm(self):
         greedy= Greedy(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
         self.actions = deque(greedy.find_pos_greedy())
-        self.simulations= greedy.moved_pos
+        self.simulations= deque(greedy.moved_pos)
         self.draw_Simulations()
     def BFSAlgorithm(self):
         bfs = BFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
         self.actions = deque(bfs.bfs())
-        self.simulations= bfs.moved_pos
+        self.simulations= deque(bfs.moved_pos)
         self.draw_Simulations()
     def DFSAlgorithm(self):
         dfs = DFS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
         self.actions = deque(dfs.find_pos_dfs())
-        self.simulations= dfs.moved_pos
+        self.simulations= deque(dfs.moved_pos)
         self.draw_Simulations()
     def UCSAlgorithm(self):
         ucs=UCS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
         self.actions = deque(ucs.ucs_snake_game())
-        self.simulations= ucs.moved_pos
+        self.simulations= deque(ucs.moved_pos)
         self.draw_Simulations()
     
     def draw_Simulations(self):
@@ -183,7 +183,7 @@ class Game:
             self.simulationImg_rect.center = tuple(simu_posGame)
             self.surface.blit(self.simulationImg, self.simulationImg_rect)
             pygame.display.flip()
-    
+
     def check_collision_algorithm(self):
         if len(self.actions)==0:      
             print("eat")
@@ -328,7 +328,7 @@ class Game:
                 self.show_game_over()
                 pause = True
                 self.reset()
-            self.clock.tick(60)
+            self.clock.tick(FPS)
     
     def run_basic(self):
         running = True
@@ -395,9 +395,9 @@ class Game:
                 self.show_game_over()
                 pause = True
                 self.reset()
-            self.clock.tick(60)
+            self.clock.tick(FPS)
 
     def start(self):
-        self.algorithm=BFS_ALGORITHM
+        self.algorithm=GREEDY_ALGORITHM
         self.run_algorithm()
         #self.run_basic()

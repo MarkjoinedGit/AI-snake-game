@@ -1,9 +1,15 @@
 
 import pygame
 
-SIZE_SNAKE_IMG=(15,15)
-SIZE_FOOD_IMG=(10,10)
 
+CELL_SIZE = 5
+CELL_NUMBER_X = 1050//CELL_SIZE
+CELL_NUMBER_Y = 700//CELL_SIZE
+ZERO_POS = 0
+HEIGHT_NAVBAR = 50
+SIZE_SNAKE_IMG=(CELL_SIZE,CELL_SIZE)
+SIZE_FOOD_IMG=(CELL_SIZE,CELL_SIZE)
+FPS=60
 
 FOOD_IMG = (
     pygame.transform.scale(pygame.image.load(r'assets\foods\food-0.png'),SIZE_FOOD_IMG),
@@ -15,14 +21,15 @@ FOOD_IMG = (
     pygame.transform.scale(pygame.image.load(r'assets\foods\food-6.png'),SIZE_FOOD_IMG)   
 )
 
-SNAKE_BLOCK_IMG = pygame.transform.scale(pygame.image.load(r'assets\snake\body-snake-blue.png'), SIZE_SNAKE_IMG)
 
-SNAKE_HEAD_IMG = {
-    'left': pygame.transform.scale(pygame.image.load(r'assets\snake\head-snake-blue-left.png'), SIZE_SNAKE_IMG),
-    'right':pygame.transform.scale(pygame.image.load(r'assets\snake\head-snake-blue-right.png'), SIZE_SNAKE_IMG),
-    'up':pygame.transform.scale(pygame.image.load(r'assets\snake\head-snake-blue-up.png'), SIZE_SNAKE_IMG),
-    'down':pygame.transform.scale(pygame.image.load(r'assets\snake\head-snake-blue-down.png'), SIZE_SNAKE_IMG),
-}
+SKIN_1= 'snake-blue'
+SKIN_2= 'anaconda'
+SKIN_3= 'crocodile'
+SKIN_4= 'frog'
+SKIN_5= 'pig'
+SKIN_6= 'sheep'
+SKIN_7= 'snake'
+SKIN_8= 'unicorn'
 
 BACKGROUND_IMG=pygame.image.load(r'assets\background.png')
 
@@ -41,11 +48,7 @@ BODER_WIDTH = 3
 BODER_COLOR = WHITE
 
 
-CELL_SIZE = 5
-CELL_NUMBER_X = 210
-CELL_NUMBER_Y = 140
-ZERO_POS = 0
-HEIGHT_NAVBAR = 50
+
 #212x152
 WIDTH_BOARD = CELL_SIZE*CELL_NUMBER_X + CELL_SIZE*2
 HEIGHT_BOARD = CELL_NUMBER_Y*CELL_SIZE + CELL_SIZE*2 + HEIGHT_NAVBAR

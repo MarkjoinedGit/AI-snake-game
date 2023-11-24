@@ -1,38 +1,39 @@
 import pygame
 from pygame.locals import *
 from static import *
-
+from skin import *
 class Snake:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
         
+        self.snake_skin = Skin(SkinName=SKIN_5)
         self.direction = LEFT
-        self.block = SNAKE_BLOCK_IMG.convert_alpha()
+        self.block = self.snake_skin.block.convert_alpha()
         self.block_rect = self.block.get_rect()
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
         self.length = 10
         self.x = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
         self.y = [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
-
+        
     def move_left(self):
         self.direction = LEFT
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
 
     def move_right(self):
         self.direction = RIGHT
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
 
     def move_up(self):
         self.direction = UP
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
 
     def move_down(self):
         self.direction = DOWN
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
 
     def walk(self):
@@ -77,3 +78,8 @@ class Snake:
         self.length += 1
         self.x.append(-1)
         self.y.append(-1)
+        
+    def changeSkin(self,skinname):
+        self.snake_skin= Skin(skinname)
+        self.block = self.snake_skin.block.convert_alpha()
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
