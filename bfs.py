@@ -99,10 +99,13 @@ class BFS:
             directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
             for d in directions:
                 newRow, newCol = row + d[0], col + d[1]
+                newPath = path + [d[2]]
                 if self.isValid(mat, visited, newRow, newCol):
+                    if ((newRow, newCol)) == dest:
+                        return newPath
                     self.moved_pos.append((newCol,newRow))
                     visited[newRow][newCol] = True
-                    q.put(((newRow, newCol), path + [d[2]]))
+                    q.put(((newRow, newCol), newPath))
 
         # Nếu không tìm thấy đường đi, trả về None
         return None
