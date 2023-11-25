@@ -1,10 +1,10 @@
 
 import pygame
-
+import numpy as np
 
 CELL_SIZE = 5
-WIDTH=1050
-HEIGHT=700
+WIDTH=500
+HEIGHT=300
 
 CELL_NUMBER_X = WIDTH//CELL_SIZE
 CELL_NUMBER_Y = HEIGHT//CELL_SIZE
@@ -82,4 +82,17 @@ GREEDY_ALGORITHM='greedy'
 UCS_ALGORITHM='ucs'
 BFS_ALGORITHM='bfs'
 DFS_ALGORITHM='dfs'
+AStar_ALGORITHM='a_star'
 NO_ALGORITHM=''
+
+def posGame_to_posMatrix(a):
+    return (a//CELL_SIZE)-1
+
+def posMatrix_to_posGame(a):
+    return (a+1)*CELL_SIZE
+
+def posGame_to_posMatrix_list(l):
+    return (np.array(l)//CELL_SIZE)-1
+
+def posMatrix_to_posGame_list(l):
+    return (np.array(l)+1)*CELL_SIZE

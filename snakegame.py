@@ -187,14 +187,14 @@ class Game:
         self.draw_Simulations()
         
     def AStarAlgorithm(self):
-        ucs=UCS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
-        self.actions = deque(ucs.ucs_snake_game())
+        ucs=AStar(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
+        self.actions = deque(ucs.find_pos_a_star())
         self.simulations= ucs.moved_pos
         self.draw_Simulations()
     
     def draw_Simulations(self):
         for simu in self.simulations:
-            simu_posGame = np.array(simu)*CELL_SIZE
+            simu_posGame = (np.array(simu)+1)*CELL_SIZE 
             self.simulationImg_rect.center = tuple(simu_posGame)
             self.surface.blit(self.simulationImg, self.simulationImg_rect)
             pygame.display.flip()
@@ -282,12 +282,18 @@ class Game:
             self.UCSAlgorithm()
         elif self.algorithm == DFS_ALGORITHM:
             self.DFSAlgorithm()
+        elif self.algorithm==AStar_ALGORITHM:
+            self.AStarAlgorithm()
     
     def run_algorithm(self):
         running = True
         pause = False
         self.choose_Algorithm()
         while running:
+            # print("----------------------------State-------------------------")
+            # print(self.snake.x,self.snake.y,sep='\n')
+            # print("Food: ",(self.food.x,self.food.y))
+            # print(self.actions)
             if self.actions==None:
                 running=False
             if(len(self.actions)>0):        
@@ -413,6 +419,6 @@ class Game:
             self.clock.tick(FPS)
 
     def start(self):
-        self.algorithm=BFS_ALGORITHM
+        self.algorithm=AStar_ALGORITHM
         self.run_algorithm()
         #self.run_basic()
