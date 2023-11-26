@@ -16,6 +16,34 @@ class Greedy:
         self.food_y  = food_pos[0][0]
         self.moved_pos=set()
     
+    # def not_around(self,next_y, next_x, direct):
+    #     snake_new_node = self.move(direct)
+    #     state = snake_new_node.CreateState()
+    #     state_row = state[next_y][:]
+    #     state_col = state[:][next_x]
+    #     count = 0
+    #     for i in range(next_x+1, len(state_row)):
+    #         if state_row[i] >1 :
+    #             count = count+1
+    #             break
+            
+    #     for i in range(next_x-1, 0,-1):
+    #         if state_row[i] >1:
+    #             count = count+1
+    #             break
+            
+    #     for i in range(next_y+1, len(state_col)):
+    #         if state_col[i] >1:
+    #             count = count+1
+    #             break
+            
+    #     for i in range(next_y-1, 0,-1):
+    #         if state_col[i] >1:
+    #             count = count+1
+    #             break
+    #     print(count)
+    #     return count < 4
+    
     def greedy_direct(self):
         possible_moves = []
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # Dưới, Trên, Phải, Trái
@@ -80,7 +108,7 @@ class Greedy:
 
     def find_pos_greedy(self):
         directs = []
-        #while not (self.snake_x == self.food_x and self.snake_y == self.food_y):
+        # while not (self.snake_x == self.food_x and self.snake_y == self.food_y):
         while not self.is_collision(self.snake_x,self.snake_y, self.food_x, self.food_y):
             direct = self.greedy_direct()
             directs.append(direct)
@@ -90,7 +118,7 @@ class Greedy:
             self.updateNode(snake_new_node)
         return directs
     
-    def is_collision(self, x1, y1, x2, y2,d=0):
+    def is_collision(self, x1, y1, x2, y2,d=1):
         if x1 >= x2-d and x1 < x2 + CELL_SIZE+d:
             if y1 >= y2-d and y1 <y2 + CELL_SIZE+d:
                 return True
