@@ -12,7 +12,7 @@ ZERO_POS = 0
 HEIGHT_NAVBAR = 50
 SIZE_SNAKE_IMG=(CELL_SIZE,CELL_SIZE)
 SIZE_FOOD_IMG=(CELL_SIZE,CELL_SIZE)
-FPS=60
+FPS=120
 
 FOOD_IMG = (
     pygame.transform.scale(pygame.image.load(r'assets\foods\food-0.png'),SIZE_FOOD_IMG),
@@ -82,7 +82,7 @@ GREEDY_ALGORITHM='greedy'
 UCS_ALGORITHM='ucs'
 BFS_ALGORITHM='bfs'
 DFS_ALGORITHM='dfs'
-AStar_ALGORITHM='a_star'
+ASTAR_ALGORITHM='a_star'
 NO_ALGORITHM=''
 
 def posGame_to_posMatrix(a):

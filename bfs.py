@@ -54,17 +54,27 @@ class BFS:
             tempX[0] = val_x
         if move == DOWN:
             tempY[0] = val_y + speed 
-            tempX[0] = val_x  
+            tempX[0] = val_x 
         new_matrix = Node(tempX, tempY, self.food_x, self.food_x).CreateState()
         return new_matrix, tempX, tempY
     
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
     
+    def check_stuck_posible(self, mat, visited, row, col):
+        directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
+        for d in directions:
+            newRow, newCol = row+d[0], col+d[1]
+            if self.isValid(mat, visited, newRow, newCol):
+                return True
+        return False
+    
     def bfs(self):
         mat = self.matrix_state
         src = ((self.Y[0]//CELL_SIZE)-1, (self.X[0]//CELL_SIZE)-1)
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
+        tempX = self.X.copy()
+        tempY = self.Y.copy()
         # Khởi tạo mảng visited
         visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
 
@@ -73,7 +83,7 @@ class BFS:
 
         # Đánh dấu ô nguồn là đã được thăm và đưa nó vào hàng đợi
         visited[src[0]][src[1]] = True
-        q.put((src, []))  # (ô hiện tại, danh sách hướng di chuyển)
+        q.put((src, [], tempX, tempY, mat))  # (ô hiện tại, danh sách hướng di chuyển)
 
         # start_time = time.time()
         
@@ -83,7 +93,7 @@ class BFS:
             #     raise TimeoutError(f"over {TIME_LIMIT}s")
             # Lấy ra ô hiện tại và danh sách hướng di chuyển từ hàng đợi
             node = q.get()
-            (pt, path) = (node[0], node[1])
+            (pt, path, tempX, tempY, mat) = (node[0], node[1], node[2], node[3], node[4])
 
             # Nếu ô hiện tại là đích, trả về danh sách hướng di chuyển
             # if pt == dest:
@@ -102,10 +112,14 @@ class BFS:
                 newPath = path + [d[2]]
                 if self.isValid(mat, visited, newRow, newCol):
                     if ((newRow, newCol)) == dest:
+                        if self.check_stuck_posible(mat, visited, newRow, newCol) == False:
+                            continue
                         return newPath
+                    newNode = Node(tempX, tempY, self.food_x, self.food_y).move(d[2])
+                    newMat, newTempX, newTempY = newNode.CreateState(), newNode.snakeX, newNode.snakeY
                     self.moved_pos.append((newCol,newRow))
                     visited[newRow][newCol] = True
-                    q.put(((newRow, newCol), newPath))
+                    q.put(((newRow, newCol), newPath, newTempX, newTempY, newMat))
 
         # Nếu không tìm thấy đường đi, trả về None
         return None
@@ -121,10 +135,10 @@ class BFS:
 # food_x = 220
 # food_y = 110
 
-# X = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
-# Y = [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
-# food_x = 250
-# food_y = 250
+# X = [330, 325, 320, 315, 310, 305, 300, 295, 290, 285, 280, 275]
+# Y = [175, 175, 175, 175, 175, 175, 175, 175, 175, 175, 175, 175]
+# food_x = 385
+# food_y = 145
 # #solution = Algorithm(X, Y, food_x, food_y).DFS(10)
 # b=BFS(X, Y, food_x, food_y)
 # solution = b.bfs()

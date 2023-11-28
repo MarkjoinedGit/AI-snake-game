@@ -65,12 +65,21 @@ class GREEDY:
     def heuristic(self, row, col, dest_y, dest_x):
         return abs(row-dest_y) + abs(col-dest_x)
         #return math.sqrt((row - dest_y)**2 + (col - dest_x)**2)
+
+    def check_stuck_posible(self, mat, visited, row, col):
+        directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
+        for d in directions:
+            newRow, newCol = row+d[0], col+d[1]
+            if self.isValid(mat, visited, newRow, newCol):
+                return True
+        return False
     
     def greedy(self):
         mat = self.matrix_state
         src = ((self.Y[0]//CELL_SIZE)-1, (self.X[0]//CELL_SIZE)-1)
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
-
+        tempX = self.X.copy()
+        tempY = self.Y.copy()
         # Khởi tạo mảng visited
         visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
         self.visited_cost = set()
@@ -80,13 +89,13 @@ class GREEDY:
 
         # Đánh dấu ô nguồn là đã được thăm và đưa nó vào hàng đợi
         visited[src[0]][src[1]] = True
-        q.put((0, src, []))  # (cost, ô hiện tại, danh sách hướng di chuyển)
+        q.put((0, src, [], tempX, tempY, mat))  # (cost, ô hiện tại, danh sách hướng di chuyển)
 
         # Lặp cho đến khi hàng đợi trống
         while not q.empty():
             # Lấy ra ô hiện tại và danh sách hướng di chuyển từ hàng đợi
             node = q.get()
-            (cost, pt, path) = (node[0], node[1], node[2])
+            (H, pt, path, tempX, tempY, mat) = (node[0], node[1], node[2], node[3], node[4], node[5])
             self.visited_cost.add((pt))
 
             # Nếu ô hiện tại là đích, trả về danh sách hướng di chuyển
@@ -103,13 +112,21 @@ class GREEDY:
                 newRow, newCol = row + d[0], col + d[1]
                 newPath = path + [d[2]]
                 if self.isValid(mat, visited, newRow, newCol):
-                    if ((newRow, newCol)) == dest:
-                        return newPath
                     self.moved_pos.append((newCol,newRow))
                     visited[newRow][newCol] = True
-                    newCost = abs(newRow-dest[0]) + abs(newCol-dest[1])  # Manhattan distance
-                    newCost = self.heuristic(newRow, newCol, dest[0], dest[1])
-                    q.put((newCost, (newRow, newCol), newPath))
+                    if ((newRow, newCol)) == dest:
+                        if self.check_stuck_posible(mat, visited, newRow, newCol) == False:
+                            continue
+                        # print(self.X)
+                        # print(self.Y)
+                        # print(self.food_x)
+                        # print(self.food_y)    
+                        return newPath
+                    newNode = Node(tempX, tempY, self.food_x, self.food_y).move(d[2])
+                    newMat, newTempX, newTempY = newNode.CreateState(), newNode.snakeX, newNode.snakeY
+                    newH = abs(newRow-dest[0]) + abs(newCol-dest[1])  # Manhattan distance
+                    newH = self.heuristic(newRow, newCol, dest[0], dest[1])
+                    q.put((newH, (newRow, newCol), newPath, newTempX, newTempY, newMat))
 
         # Nếu không tìm thấy đường đi, trả về None
         return None
@@ -126,14 +143,14 @@ class GREEDY:
 # food_y = 110
 
 
-foodX = 55
-foodY = 275
-snakeX = [350, 345, 345, 340, 340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, -1]
-snakeY = [275, 275, 270, 270, 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, -1]
-# #solution = Algorithm(X, Y, food_x, food_y).DFS(10)
-b=GREEDY(snakeX, snakeY, foodX, foodY)
-solution = b.greedy()
-print(solution)
-print(len(solution))
-print(len(b.visited_cost))
+# foodX = 435
+# foodY = 145
+# snakeX = [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+# snakeY = [180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230]
+# # solution = Algorithm(X, Y, food_x, food_y).DFS(10)
+# b=GREEDY(snakeX, snakeY, foodX, foodY)
+# solution = b.greedy()
+# print(solution)
+# print(len(solution))
+# print(len(b.visited_cost))
 
