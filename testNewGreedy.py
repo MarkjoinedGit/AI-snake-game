@@ -5,8 +5,9 @@ from queue import PriorityQueue
 from static import *
 from queue import Queue
 import time
+import math
 
-class BFS:
+class GREEDY:
     def __init__(self, initial_X, initial_Y, food_x, food_y):
         self.X = initial_X
         self.Y = initial_Y
@@ -61,37 +62,38 @@ class BFS:
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
     
-    def bfs(self):
+    def heuristic(self, row, col, dest_y, dest_x):
+        return abs(row-dest_y) + abs(col-dest_x)
+        #return math.sqrt((row - dest_y)**2 + (col - dest_x)**2)
+    
+    def greedy(self):
         mat = self.matrix_state
         src = ((self.Y[0]//CELL_SIZE)-1, (self.X[0]//CELL_SIZE)-1)
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
+
         # Khởi tạo mảng visited
         visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
+        self.visited_cost = set()
 
         # Tạo hàng đợi để lưu trữ các ô của bàn chơi
-        q = Queue()
+        q = PriorityQueue()
 
         # Đánh dấu ô nguồn là đã được thăm và đưa nó vào hàng đợi
         visited[src[0]][src[1]] = True
-        q.put((src, []))  # (ô hiện tại, danh sách hướng di chuyển)
+        q.put((0, src, []))  # (cost, ô hiện tại, danh sách hướng di chuyển)
 
-        # start_time = time.time()
-        
         # Lặp cho đến khi hàng đợi trống
         while not q.empty():
-            # if(time.time()-start_time>=TIME_LIMIT):
-            #     raise TimeoutError(f"over {TIME_LIMIT}s")
             # Lấy ra ô hiện tại và danh sách hướng di chuyển từ hàng đợi
             node = q.get()
-            (pt, path) = (node[0], node[1])
+            (cost, pt, path) = (node[0], node[1], node[2])
+            self.visited_cost.add((pt))
 
             # Nếu ô hiện tại là đích, trả về danh sách hướng di chuyển
-            # if pt == dest:
-            #     print("bfs: ",pt,dest)
-            #     return path
             if self.is_collision(pt[0],pt[1],dest[0],dest[1]):
-                print("bfs: ",pt,dest)
+                print("greedy: ",pt,dest)
                 return path
+
             # Lấy ra tọa độ của ô hiện tại
             (row, col) = (pt[0], pt[1])
 
@@ -105,7 +107,9 @@ class BFS:
                         return newPath
                     self.moved_pos.append((newCol,newRow))
                     visited[newRow][newCol] = True
-                    q.put(((newRow, newCol), newPath))
+                    newCost = abs(newRow-dest[0]) + abs(newCol-dest[1])  # Manhattan distance
+                    newCost = self.heuristic(newRow, newCol, dest[0], dest[1])
+                    q.put((newCost, (newRow, newCol), newPath))
 
         # Nếu không tìm thấy đường đi, trả về None
         return None
@@ -121,13 +125,15 @@ class BFS:
 # food_x = 220
 # food_y = 110
 
-# X = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
-# Y = [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
-# food_x = 250
-# food_y = 250
+
+foodX = 55
+foodY = 275
+snakeX = [350, 345, 345, 340, 340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, -1]
+snakeY = [275, 275, 270, 270, 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, -1]
 # #solution = Algorithm(X, Y, food_x, food_y).DFS(10)
-# b=BFS(X, Y, food_x, food_y)
-# solution = b.bfs()
-# print(solution)
-# print(b.moved_pos)
+b=GREEDY(snakeX, snakeY, foodX, foodY)
+solution = b.greedy()
+print(solution)
+print(len(solution))
+print(len(b.visited_cost))
 

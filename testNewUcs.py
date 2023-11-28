@@ -4,9 +4,12 @@ import numpy as np
 from queue import PriorityQueue
 from static import *
 from queue import Queue
-import time
+from queue import PriorityQueue
+import heapq
 
-class BFS:
+
+
+class UCS:
     def __init__(self, initial_X, initial_Y, food_x, food_y):
         self.X = initial_X
         self.Y = initial_Y
@@ -61,55 +64,43 @@ class BFS:
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
     
-    def bfs(self):
+
+    def ucs(self):
         mat = self.matrix_state
         src = ((self.Y[0]//CELL_SIZE)-1, (self.X[0]//CELL_SIZE)-1)
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
-        # Khởi tạo mảng visited
+
         visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
+        self.visited_cost = set()
 
-        # Tạo hàng đợi để lưu trữ các ô của bàn chơi
-        q = Queue()
+        pq = []
 
-        # Đánh dấu ô nguồn là đã được thăm và đưa nó vào hàng đợi
-        visited[src[0]][src[1]] = True
-        q.put((src, []))  # (ô hiện tại, danh sách hướng di chuyển)
+        pq.append((0, src, []))  # (cost, current node, path)
 
-        # start_time = time.time()
-        
-        # Lặp cho đến khi hàng đợi trống
-        while not q.empty():
-            # if(time.time()-start_time>=TIME_LIMIT):
-            #     raise TimeoutError(f"over {TIME_LIMIT}s")
-            # Lấy ra ô hiện tại và danh sách hướng di chuyển từ hàng đợi
-            node = q.get()
-            (pt, path) = (node[0], node[1])
+        while pq:
+            node = heapq.heappop(pq)
+            (cost, pt, path) = (node[0], node[1], node[2])
+            self.visited_cost.add((cost, pt))
 
-            # Nếu ô hiện tại là đích, trả về danh sách hướng di chuyển
-            # if pt == dest:
-            #     print("bfs: ",pt,dest)
-            #     return path
             if self.is_collision(pt[0],pt[1],dest[0],dest[1]):
-                print("bfs: ",pt,dest)
+                print("ucs: ",pt,dest)
                 return path
-            # Lấy ra tọa độ của ô hiện tại
+
             (row, col) = (pt[0], pt[1])
 
-            # Kiểm tra tất cả các ô xung quanh ô hiện tại và đưa chúng vào hàng đợi
             directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
             for d in directions:
                 newRow, newCol = row + d[0], col + d[1]
                 newPath = path + [d[2]]
+                newCost = cost + 1  # assuming each move has a cost of 1
                 if self.isValid(mat, visited, newRow, newCol):
                     if ((newRow, newCol)) == dest:
                         return newPath
                     self.moved_pos.append((newCol,newRow))
                     visited[newRow][newCol] = True
-                    q.put(((newRow, newCol), newPath))
+                    pq.append((newCost, (newRow, newCol), newPath))
 
-        # Nếu không tìm thấy đường đi, trả về None
         return None
-    
     def is_collision(self, x1, y1, x2, y2,d=0):
         if x1 >= x2-d and x1 < x2 + 1+d:
             if y1 >= y2-d and y1 <y2 + 1+d:
@@ -121,13 +112,15 @@ class BFS:
 # food_x = 220
 # food_y = 110
 
-# X = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
-# Y = [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
-# food_x = 250
-# food_y = 250
-# #solution = Algorithm(X, Y, food_x, food_y).DFS(10)
-# b=BFS(X, Y, food_x, food_y)
-# solution = b.bfs()
-# print(solution)
-# print(b.moved_pos)
+
+foodX = 55
+foodY = 275
+snakeX = [350, 345, 345, 340, 340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, -1]
+snakeY = [275, 275, 270, 270, 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, -1]
+#solution = Algorithm(X, Y, food_x, food_y).DFS(10)
+b=UCS(snakeX, snakeY, foodX, foodY)
+solution = b.ucs()
+print(solution)
+print(len(solution))
+print(len(b.visited_cost))
 
