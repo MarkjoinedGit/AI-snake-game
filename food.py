@@ -5,10 +5,8 @@ class Food:
         self.parent_screen = parent_screen
         self.image = FOOD_IMG[1].convert_alpha()
         self.rect = self.image.get_rect()
-        # self.x = CELL_SIZE*50
-        # self.y = CELL_SIZE*50 
-        self.x = 380
-        self.y = 100       
+        self.x = CELL_SIZE*50
+        self.y = CELL_SIZE*50        
 
     def draw(self):
         self.rect.center = (self.x, self.y)

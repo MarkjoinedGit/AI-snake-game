@@ -1,181 +1,77 @@
-import heapq
-import numpy as np
 from node import *
+from collections import deque
+import numpy as np
+from queue import PriorityQueue
 from static import *
-import time
+from queue import Queue
+from queue import PriorityQueue
+import heapq
 
 class UCS:
-    def __init__(self, snake_node):
-        self.snake_node = snake_node
-        self.snake_state = self.snake_node.CreateState()
-        food_pos = np.where(self.snake_state == -1)
-        head_snake_pos = np.where(self.snake_state == 1)
-        self.snake_x  = head_snake_pos[1][0]
-        self.snake_y = head_snake_pos[0][0]
-        self.food_x = food_pos[1][0]
-        self.food_y  = food_pos[0][0]
-        
-        self.moved_pos = set()
+    def __init__(self, initial_X, initial_Y, food_x, food_y):
+        self.X = initial_X
+        self.Y = initial_Y
+        self.food_x = food_x
+        self.food_y = food_y
+        self.node = Node(self.X, self.Y, self.food_x, self.food_y)
+        self.matrix_state = self.node.CreateState()
+        self.moved_pos=[]  
 
-    def is_goal(self,y, x):
-        return self.food_y == y and self.food_x == x
+    def isValid(sefl, mat, visited, row, col):
+        return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
     
-    def is_valid(self,value):
-        return FOOD <= value and value <= EMPTY
+    def check_stuck_posible(self, mat, visited, row, col):
+        directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
+        for d in directions:
+            newRow, newCol = row+d[0], col+d[1]
+            if self.isValid(mat, visited, newRow, newCol):
+                return True
+        return False      
 
-    def find_priority_move(self):
-        priority = (-1 if self.snake_y - self.food_y < 0 else 1,\
-                    -1 if self.snake_x - self.food_x > 0 else 1)
-        if self.snake_y == self.food_y:  # Điểm nằm ngang với điểm thức ăn
-            priority = (0, priority[1])
-        elif self.snake_x == self.food_x:  # Điểm nằm dọc với điểm thức ăn
-            priority = (priority[0], 0)
-        else:  # Điểm nằm ở một góc so với điểm thức ăn
-            priority = (priority[0], priority[1])
-            
-        priority_move = {( 1, 1):[(-1, 0),(0, 1)], # Thức ăn nằm bên phải trên
-                         ( 1,-1):[(-1, 0),(0,-1)], # Thức ăn nằm bên trái trên
-                         (-1,-1):[( 0,-1),(1, 0)], # Thức ăn nằm bên trái dưới
-                         (-1, 1):[( 0, 1),(1, 0)], # Thức ăn nằm bên phải dưới
-                         ( 0, 1):[( 0, 1)],  # Thức ăn nằm bên phải
-                         ( 0,-1):[( 0,-1)],  # Thức ăn nằm bên trái
-                         ( 1, 0):[(-1, 0)],  # Thức ăn nằm phía trên
-                         (-1, 0):[( 1, 0)]}  # Thức ăn nằm phía dưới
+    def ucs(self):
+        mat = self.matrix_state
+        src = ((self.Y[0]//CELL_SIZE)-1, (self.X[0]//CELL_SIZE)-1)
+        dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
+        tempX = self.X.copy()
+        tempY = self.Y.copy()
 
-        return priority_move[priority]
+        visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
+        self.visited_cost = set()
 
-    def move(self, move):
-        snakeX = self.snake_node.snakeX
-        snakeY = self.snake_node.snakeY
+        pq = []
 
-        head_x, head_y = snakeX[0], snakeY[0]
+        pq.append((0, src, [], tempX, tempY, mat))  
 
-        snakeX = np.roll(snakeX, 1)
-        snakeY = np.roll(snakeY, 1)
-        
-        # print(move)
-        speed = 5
-        if move == LEFT :
-            snakeY[0] = head_y
-            snakeX[0] = head_x - speed
-        if move == RIGHT:
-            snakeY[0] = head_y 
-            snakeX[0] = head_x + speed 
-        if move == UP:
-            snakeX[0] = head_x
-            snakeY[0] = head_y - speed
-        if move == DOWN:
-            snakeX[0] = head_x 
-            snakeY[0] = head_y + speed
-        new_node = Node(snakeX, snakeY, self.snake_node.foodX, self.snake_node.foodY)
-        return new_node
+        while pq:
+            node = heapq.heappop(pq)
+            (cost, pt, path, tempX, tempY, mat) = (node[0], node[1], node[2], node[3], node[4], node[5])
+            self.visited_cost.add((cost, pt))
 
-    def updateNode(self, snake_new_node):
-        self.snake_node = snake_new_node
-        self.snake_state = self.snake_node.CreateState()
-        food_pos = np.where(self.snake_state == -1)
-        head_snake_pos = np.where(self.snake_state == 1)
-        self.snake_x  = head_snake_pos[1][0]
-        self.snake_y = head_snake_pos[0][0]
-        self.food_x = food_pos[1][0]
-        self.food_y  = food_pos[0][0]
+            if self.is_collision(pt[0],pt[1],dest[0],dest[1]):
+                print("ucs: ",pt,dest)
+                return path
 
-    def dist(self,state, goal):
-        dist = abs(goal[0] - state[0]) + abs(goal[1] - state[1])
-        return dist
+            (row, col) = (pt[0], pt[1])
 
-    def in_board(self, y, x):
-        board_height = len(self.snake_state)
-        board_width = len(self.snake_state[0]) if board_height > 0 else 0
-
-       # Kiểm tra xem tọa độ (y, x) có nằm trong phạm vi của bảng trò chơi hay không
-        return 0 <= y < board_height and 0 <= x < board_width
-
-    def ucs_snake_game(self):
-        directs = []
-        
-        # Khởi tạo hàng đợi ưu tiên
-        priority_queue = [(0, (self.snake_y, self.snake_x, []))]  # (cost, (x, y, path))
-        visited = set()
-        
-        while priority_queue:
-            cost, (y, x, path) = heapq.heappop(priority_queue)
-            if (x, y) not in visited:
-                visited.add((y, x))
-                path = path + [(y, x)]
-                # directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-                directions = self.find_priority_move()
-                # print(directions)
-                direction_mapping = {(0, 1): RIGHT, (0, -1): LEFT, (1, 0): DOWN, (-1, 0): UP}
-                direction_mapping = {key: value for key, value in direction_mapping.items() if key in directions}
-                if(directions == {}):
-                    print("not")
-                leng = len(directions)
-                # print(directions)
-                for dy, dx in directions:
-                    new_x, new_y = x + dx, y + dy
-                    # print(new_y,new_x)
-                    # print(new_y, new_x)
-                    if self.in_board(new_y, new_x):
-                        if self.is_valid(self.snake_state[new_y,new_x]):
-                            self.moved_pos.add((new_x, new_y))
-                            heapq.heappush(priority_queue, (cost + 1, (new_y, new_x, path)))
-                            directs.append(direction_mapping[(dy, dx)])
-                            if self.dist([self.snake_y, self.snake_x], [self.food_y, self.food_x]) <=1:
-                                return directs
-                            snake_new_node = self.move(direction_mapping[(dy, dx)])
-                            self.updateNode(snake_new_node)
-                            leng -=1
-                if leng == len(directions):
-                    print("----------------------------")
-        return None
-    # Hàm kiểm tra xem điểm có nằm trong biên của ma trận không
+            directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
+            for d in directions:
+                newRow, newCol = row + d[0], col + d[1]
+                newPath = path + [d[2]]               
+                if self.isValid(mat, visited, newRow, newCol):
+                    if ((newRow, newCol)) == dest:
+                        if self.check_stuck_posible(mat, visited, newRow, newCol) == False:
+                            continue
+                        return newPath
+                    newNode = Node(tempX, tempY, self.food_x, self.food_y).move(d[2])
+                    newMat, newTempX, newTempY = newNode.CreateState(), newNode.snakeX, newNode.snakeY
+                    self.moved_pos.append((newCol,newRow))
+                    visited[newRow][newCol] = True
+                    newCost = cost + 1
+                    pq.append((newCost, (newRow, newCol), newPath, newTempX, newTempY, newMat))
+        return Queue()
     
-
-# foodX = 580
-# foodY = 150
-# snakeX = [775, 775, 770, 765, 760, 755, 750, 745, 740, 735, 730, 725, 720, 715, 710, 705, 700, 695, 690, 685, 680, 675, 670, 665, 660, 655, 650, 645, 640, 635, 630, 625, 620, 615, 610, 605, 600, 595, 590, 585, 580, 575, 570, 565]  
-# snakeY = [600, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595, 595] 
-# greedy = UCS(Node(snakeX,snakeY,foodX,foodY))
-# state = greedy.snake_state
-
-# print(greedy.food_y,greedy.food_x)
-# print(greedy.snake_y, greedy.snake_x)
-
-# start_time = time.time()
-# # print(self.snake_y, self.snake_x)
-
-# print(greedy.ucs_snake_game()) 
-# # print(greedy.moved_pos) 
-
-
-# end_time = time.time()
-
-# # Tính thời gian chạy bằng cách lấy hiệu của thời điểm kết thúc và thời điểm bắt đầu
-# elapsed_time = end_time - start_time
-# print(f"Thời gian chạy: {elapsed_time} giây")
-# snakeY = [955, 950, 945, 940, 935, 930, 925, 920, 915, 910, 905, 900]
-# snakeX = [370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 365]
-# foodY = 105
-# foodX = 640
-
-
-# foodX = 300
-# foodY = 350
-# snakeY = [610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610, 610]
-# snakeX = [505, 500, 495, 490, 485, 480, 475, 470, 465, 460, 455, 450, 445, 440, 435]
-# ucs = UCS(Node(snakeX,snakeY,foodX,foodY))
-# state = ucs.snake_state
-
-
-# start_time = time.time()
-# # print(self.snake_y, self.snake_x)
-# print(ucs.ucs_snake_game()) 
-
-# end_time = time.time()
-
-# # Tính thời gian chạy bằng cách lấy hiệu của thời điểm kết thúc và thời điểm bắt đầu
-# elapsed_time = end_time - start_time
-# print(f"Thời gian chạy: {elapsed_time} giây")
-
-
+    def is_collision(self, x1, y1, x2, y2,d=0):
+        if x1 >= x2-d and x1 < x2 + 1+d:
+            if y1 >= y2-d and y1 <y2 + 1+d:
+                return True
+        return False

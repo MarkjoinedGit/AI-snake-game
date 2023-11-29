@@ -11,9 +11,6 @@ from greedy import *
 from ucs import *
 from dfs import *
 from a_star import *
-import testNewUcs
-import testNewGreedy
-import testNewAStar
 
 class Game:
     def __init__(self):
@@ -104,10 +101,10 @@ class Game:
     def reset(self):
         self.snake = Snake(self.surface)
         self.food = Food(self.surface)
-        print(self.snake.x)
-        print(self.snake.y)
-        print(self.food.x)
-        print(self.food.x)
+        # print(self.snake.x)
+        # print(self.snake.y)
+        # print(self.food.x)
+        # print(self.food.x)
 
     def is_collision(self, x1, y1, x2, y2,d=0):
         if x1 >= x2-d and x1 < x2 + CELL_SIZE+d:
@@ -117,7 +114,10 @@ class Game:
 
     def create_ValidFood(self):
         self.food.move()
-        while self.food.x in self.snake.x and self.food.y in self.snake.y:
+        pos_snake=zip(self.snake.x , self.snake.y)
+        
+        while (self.food.x,self.food.y) in pos_snake:
+            print('food failed')
             self.food.move()
         # print(self.food.x)
         # print(self.food.y)
@@ -142,10 +142,10 @@ class Game:
         # print("Food: ",(self.food.x,self.food.y))
         # print(self.actions)
         if len(self.actions)==0:
-            print(self.snake.x)
-            print(self.snake.y)
-            print(self.food.x)
-            print(self.food.x)
+            # print(self.snake.x)
+            # print(self.snake.y)
+            # print(self.food.x)
+            # print(self.food.x)
             self.choose_Algorithm()
                              
     def play_basic(self):
@@ -176,7 +176,7 @@ class Game:
                 raise "Collision Occurred"
     
     def GreedyAlgorithm(self):
-        greedy= testNewGreedy.GREEDY(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        greedy= GREEDY(self.snake.x,self.snake.y,self.food.x,self.food.y)
         self.actions = deque(greedy.greedy())
         self.simulations=greedy.moved_pos
         self.draw_Simulations()
@@ -188,19 +188,19 @@ class Game:
         self.draw_Simulations()
     
     def DFSAlgorithm(self):
-        dfs = DFS(Node(self.snake.x,self.snake.y,self.food.x,self.food.y))
+        dfs = DFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
         self.actions = deque(dfs.dfs())
         self.simulations= dfs.moved_pos
         self.draw_Simulations()
     
     def UCSAlgorithm(self):
-        ucs=testNewUcs.UCS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        ucs=UCS(self.snake.x,self.snake.y,self.food.x,self.food.y)
         self.actions = deque(ucs.ucs())
         self.simulations= ucs.moved_pos
         self.draw_Simulations()
         
     def AStarAlgorithm(self):
-        astar=testNewAStar.ASTAR(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        astar=ASTAR(self.snake.x,self.snake.y,self.food.x,self.food.y)
         self.actions = deque(astar.a_star())
         self.simulations= astar.moved_pos
         #print('moved_pos=', len(astar.moved_pos))
@@ -320,36 +320,36 @@ class Game:
             if(len(self.actions)>0):        
                 move = self.actions.popleft()
                 self.displayMovement(move)
-            # for event in pygame.event.get():
-            #     if event.type == KEYDOWN:
-            #         if event.key == K_ESCAPE:
-            #             running = False
-            #         if event.key == K_RETURN:
-            #             pygame.mixer.music.unpause()
-            #             pause = False
-            #     if event.type == pygame.QUIT:
-            #         running = False
-            #         pygame.quit()
-            #     if event.type == pygame.MOUSEBUTTONDOWN: 
-            #         if self.sub_mode_rect.collidepoint(pygame.mouse.get_pos()) == False and self.sub_algorithm_rect.collidepoint(pygame.mouse.get_pos()) == False:
-            #             self.mode_menu_open = False      
-            #             pause=False  
-            #         for btn in self.btn_menu_list:
-            #             btn.pressed = False
-            #         for btn in self.btn_menu_list:
-            #             if btn.check_click():   
-            #                 if btn.text == 'MENU':
-            #                     pause = True
-            #                     print('get into menu')
-            #                     self.mode_menu_open = True
-            #                 if btn.text == 'PLAY':
-            #                     pause= False
-            #         if self.logo_rect.collidepoint(pygame.mouse.get_pos()):
-            #             print('collide with logo')
-            #             self.show_game_over()
-            #             pause = True
-            #             self.reset()
-            #             return
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        running = False
+                    if event.key == K_RETURN:
+                        pygame.mixer.music.unpause()
+                        pause = False
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN: 
+                    if self.sub_mode_rect.collidepoint(pygame.mouse.get_pos()) == False and self.sub_algorithm_rect.collidepoint(pygame.mouse.get_pos()) == False:
+                        self.mode_menu_open = False      
+                        pause=False  
+                    for btn in self.btn_menu_list:
+                        btn.pressed = False
+                    for btn in self.btn_menu_list:
+                        if btn.check_click():   
+                            if btn.text == 'MENU':
+                                pause = True
+                                print('get into menu')
+                                self.mode_menu_open = True
+                            if btn.text == 'PLAY':
+                                pause= False
+                    if self.logo_rect.collidepoint(pygame.mouse.get_pos()):
+                        print('collide with logo')
+                        self.show_game_over()
+                        pause = True
+                        self.reset()
+                        return
             try:
                 if not pause:
                     self.play_algorithm()
@@ -440,9 +440,9 @@ class Game:
             self.clock.tick(FPS)
 
     def start(self):
-        self.algorithm=ASTAR_ALGORITHM
+        self.algorithm=DFS_ALGORITHM
         self.run_algorithm()
         #self.run_basic()
 
-gem = Game()
-gem.start()
+# gem = Game()
+# gem.start()
