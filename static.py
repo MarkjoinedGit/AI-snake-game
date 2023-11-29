@@ -1,15 +1,17 @@
 
 import pygame
 import numpy as np
+from map import *
 
-CELL_SIZE = 5
-WIDTH=500
-HEIGHT=400
+CELL_SIZE = 10
+WIDTH=1200
+HEIGHT=600
 
 CELL_NUMBER_X = WIDTH//CELL_SIZE
 CELL_NUMBER_Y = HEIGHT//CELL_SIZE
 ZERO_POS = 0
 HEIGHT_NAVBAR = 50
+
 SIZE_SNAKE_IMG=(CELL_SIZE,CELL_SIZE)
 SIZE_FOOD_IMG=(CELL_SIZE,CELL_SIZE)
 FPS=120
@@ -38,6 +40,8 @@ BACKGROUND_IMG=pygame.image.load(r'assets\background.png')
 
 SIMULATION_IMG=pygame.image.load(r'assets\simulation.png')
 
+OBSTACLE_IMG = pygame.transform.scale(pygame.image.load(r'assets\obstacle.png'),(CELL_SIZE,CELL_SIZE))
+
 #MENU
 
 BLACK = (0, 0, 0)
@@ -50,7 +54,11 @@ BLACK_BLUE = (35, 45, 63)
 BODER_WIDTH = 3
 BODER_COLOR = WHITE
 
-
+MAP={
+    'Easy':MAP0,
+    'Normal':MAP1,
+    'Difficult':MAP2 
+}
 
 #212x152
 WIDTH_BOARD = CELL_SIZE*CELL_NUMBER_X + CELL_SIZE*2
@@ -73,6 +81,8 @@ FOOD = -1
 HEAD = 1
 OBSTACLE=-2
 
+OBSTACLES_POS=set()
+
 TIME_LIMIT=0.2
 DEPTH_LIMIT = 10
 
@@ -85,6 +95,11 @@ DFS_ALGORITHM='dfs'
 ASTAR_ALGORITHM='a_star'
 NO_ALGORITHM=''
 
+
+
+
+
+
 def posGame_to_posMatrix(a):
     return (a//CELL_SIZE)-1
 
@@ -96,3 +111,5 @@ def posGame_to_posMatrix_list(l):
 
 def posMatrix_to_posGame_list(l):
     return (np.array(l)+1)*CELL_SIZE
+
+

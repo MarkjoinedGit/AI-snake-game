@@ -7,12 +7,14 @@ from queue import Queue
 import time 
 
 class BFS:
-    def __init__(self, initial_X, initial_Y, food_x, food_y):
+    def __init__(self, initial_X, initial_Y, food_x, food_y,obstacles):
         self.X = initial_X
         self.Y = initial_Y
         self.food_x = food_x
         self.food_y = food_y
+        self.obstacles =  obstacles
         self.node = Node(self.X, self.Y, self.food_x, self.food_y)
+        self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
         self.moved_pos = []
         
@@ -58,6 +60,7 @@ class BFS:
                             continue
                         return newPath
                     newNode = Node(tempX, tempY, self.food_x, self.food_y).move(d[2])
+                    newNode.obstacles=self.obstacles
                     newMat, newTempX, newTempY = newNode.CreateState(), newNode.snakeX, newNode.snakeY                
                     q.put(((newRow, newCol), newPath, newTempX, newTempY, newMat))
 

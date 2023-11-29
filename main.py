@@ -108,7 +108,6 @@ while True:
     else:
         snakegame.Game().start()
         start_game = False
-
     pg.display.update()
     clock.tick(FPS)
 

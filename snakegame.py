@@ -26,14 +26,23 @@ class Game:
         self.food = Food(self.surface)
         self.food.draw()
         
+        
+        
         self.play_background_music()
         self.clock = pygame.time.Clock()
         
         self.algorithm= NO_ALGORITHM
         self.actions = deque([])
+        
         self.simulations=[]
         self.simulationImg=SIMULATION_IMG.convert_alpha()
         self.simulationImg_rect = self.simulationImg.get_rect()
+        
+        self.obstacles=set()
+        self.obstacleImg=OBSTACLE_IMG.convert_alpha()
+        self.obstacleImg_rect = self.simulationImg.get_rect()
+        
+        
         self.run_time = 0
         
         
@@ -123,12 +132,9 @@ class Game:
 
     def create_ValidFood(self):
         self.food.move()
-        pos_snake=zip(self.snake.x , self.snake.y)
-        
-        while (self.food.x,self.food.y) in pos_snake:
+        pos_not_valid= set(zip(self.snake.x , self.snake.y)).union(self.obstacles)
+        while  (self.food.x,self.food.y) in pos_not_valid:
             self.food.move()
-        # print(self.food.x)
-        # print(self.food.y)
 
     def render_background(self):
         self.surface.fill('black')
@@ -138,8 +144,8 @@ class Game:
     def play_algorithm(self):
         self.draw_display()
         self.food.draw() 
+        self.draw_obstacles()  
         self.snake.walk()
-        
         self.display_score()
         pygame.display.flip()
         
@@ -164,9 +170,9 @@ class Game:
         self.snake.walk()
         self.display_score()
         pygame.display.flip()
-        print("-----------------------------------------------------------")
-        print(self.snake.x,self.snake.y,sep='\n')
-        print("Food: ",(self.food.x,self.food.y))
+        # print("-----------------------------------------------------------")
+        # print(self.snake.x,self.snake.y,sep='\n')
+        # print("Food: ",(self.food.x,self.food.y))
         self.check_collision()   
     
     def check_collision(self):
@@ -186,31 +192,31 @@ class Game:
                 raise "Collision Occurred"
     
     def GreedyAlgorithm(self):
-        greedy= GREEDY(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        greedy= GREEDY(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(greedy.greedy())
         self.simulations=greedy.moved_pos
         self.draw_Simulations()
     
     def BFSAlgorithm(self):
-        bfs = BFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        bfs = BFS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(bfs.bfs())
         self.simulations= bfs.moved_pos
         self.draw_Simulations()
     
     def DFSAlgorithm(self):
-        dfs = DFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        dfs = DFS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(dfs.dfs())
         self.simulations= dfs.moved_pos
         self.draw_Simulations()
     
     def UCSAlgorithm(self):
-        ucs=UCS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        ucs=UCS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(ucs.ucs())
         self.simulations= ucs.moved_pos
         self.draw_Simulations()
         
     def AStarAlgorithm(self):
-        astar=ASTAR(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        astar=ASTAR(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(astar.a_star())
         self.simulations= astar.moved_pos
         self.draw_Simulations()
@@ -220,11 +226,11 @@ class Game:
         self.actions_total_count+=len(self.actions)
         self.moved_pos_total.append(len(self.simulations))
         self.moved_pos_total_count+=len(self.simulations)
-        # for simu in self.simulations:
-        #     simu_posGame = (np.array(simu)+1)*CELL_SIZE
-        #     self.simulationImg_rect.center = tuple(simu_posGame)
-        #     self.surface.blit(self.simulationImg, self.simulationImg_rect)
-        #     pygame.display.flip()
+        for simu in self.simulations:
+            simu_posGame = (np.array(simu)+1)*CELL_SIZE
+            self.simulationImg_rect.center = tuple(simu_posGame)
+            self.surface.blit(self.simulationImg, self.simulationImg_rect)
+            pygame.display.flip()
 
     def check_collision_algorithm(self):
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,0):      
@@ -312,9 +318,39 @@ class Game:
         elif self.algorithm==ASTAR_ALGORITHM:
             self.AStarAlgorithm()
     
+    def get_obstacles(self):
+        running=True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        running= False
+            self.draw_display()    
+            self.handle_mouse_events()  
+            self.draw_obstacles()  
+            pygame.display.flip() 
+            self.clock.tick(FPS)
+        print(self.obstacles)
+    
+        
+    def handle_mouse_events(self):
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        if pygame.mouse.get_pressed()[0]:
+            self.obstacles.add((mouse_x// CELL_SIZE * CELL_SIZE, mouse_y// CELL_SIZE * CELL_SIZE))
+        
+    def draw_obstacles(self):
+        for obstacle in self.obstacles:
+            self.obstacleImg_rect.center = obstacle
+            self.surface.blit(self.obstacleImg, self.obstacleImg_rect)
+    
     def run_algorithm(self):
         running = True
         pause = False
+        # self.get_obstacles()
+        self.draw_obstacles()  
+        print(OBSTACLES_POS)
         start_time= time.time()
         self.choose_Algorithm()
         while running:
@@ -375,6 +411,7 @@ class Game:
                 # # print(self.snake.x,self.snake.y,sep='\n')
                 # # print("Food: ",(self.food.x,self.food.y))
                 # # print(self.actions)
+
                 print("action len list=", self.actions_total)
                 print("action total count=", self.actions_total_count)
                 print("moved_pos len list=",self.moved_pos_total)
@@ -454,5 +491,7 @@ class Game:
             self.clock.tick(FPS)
 
     def start(self):
-        self.algorithm=UCS_ALGORITHM
+        self.algorithm=DFS_ALGORITHM
+        self.obstacles= MAP['Normal']
         self.run_algorithm()
+gi
