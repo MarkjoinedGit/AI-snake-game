@@ -13,6 +13,7 @@ class BFS:
         self.food_y = food_y
         self.node = Node(self.X, self.Y, self.food_x, self.food_y)
         self.matrix_state = self.node.CreateState()
+        self.moved_pos = []
         
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]

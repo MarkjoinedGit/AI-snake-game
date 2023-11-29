@@ -86,6 +86,10 @@ class Game:
             self.btn_sub_algorithm_list.append(button)
         self.setting_menu_open = False
 
+        #data
+        self.actions_total_count=0
+        self.moved_pos_total_count=0
+
     def play_background_music(self):
         pygame.mixer.music.load(r'assets\sounds\forest.wav')
         pygame.mixer.music.play(-1, 0)
@@ -117,7 +121,6 @@ class Game:
         pos_snake=zip(self.snake.x , self.snake.y)
         
         while (self.food.x,self.food.y) in pos_snake:
-            print('food failed')
             self.food.move()
         # print(self.food.x)
         # print(self.food.y)
@@ -203,11 +206,11 @@ class Game:
         astar=ASTAR(self.snake.x,self.snake.y,self.food.x,self.food.y)
         self.actions = deque(astar.a_star())
         self.simulations= astar.moved_pos
-        #print('moved_pos=', len(astar.moved_pos))
         self.draw_Simulations()
     
     def draw_Simulations(self):
-        #count=0
+        self.actions_total_count+=len(self.actions)
+        self.moved_pos_total_count+=len(self.simulations)
         for simu in self.simulations:
             #count+=1
             simu_posGame = (np.array(simu)+1)*CELL_SIZE
@@ -234,10 +237,6 @@ class Game:
                 raise "Collision Occurred"       
             
     def draw_display(self):
-        # print(self.snake.x)
-        # print(self.snake.y)
-        # print(self.food.x)
-        # print(self.food.y)
         self.surface.fill('black')
         self.render_background() 
         self.surface.blit(self.navbar,(0,0))
@@ -364,9 +363,13 @@ class Game:
             except Exception as e:
                 print(e)
                 print("----------------------------ERROR-------------------------")
-                print(self.snake.x,self.snake.y,sep='\n')
-                print("Food: ",(self.food.x,self.food.y))
-                print(self.actions)
+                # print(self.snake.x,self.snake.y,sep='\n')
+                # print("Food: ",(self.food.x,self.food.y))
+                # print(self.actions)
+                print(self.actions_total_count)
+                print(self.moved_pos_total_count)
+                self.actions_total_count=0
+                self.moved_pos_total_count=0
                 self.show_game_over()
                 pause = True
                 self.reset()
@@ -440,9 +443,5 @@ class Game:
             self.clock.tick(FPS)
 
     def start(self):
-        self.algorithm=DFS_ALGORITHM
+        self.algorithm=BFS_ALGORITHM
         self.run_algorithm()
-        #self.run_basic()
-
-# gem = Game()
-# gem.start()
