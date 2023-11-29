@@ -1,17 +1,23 @@
 import pygame
+import numpy as np
 from pygame.locals import *
-from snake import Snake
-from food import Food
+from snake import *
+from food import *
 import buttons as btn
 from static import *
 from collections import deque
+from bfs import *
+from greedy import *
+from ucs import *
+from dfs import *
+from a_star import *
 
 class Game:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()   
         pygame.display.set_caption('Snather')    
-        pygame.display.flip()
+        #pygame.display.flip()
         self.surface = pygame.display.set_mode((WIDTH_BOARD, HEIGHT_BOARD))
         #snake
         self.snake = Snake(self.surface)
@@ -23,6 +29,11 @@ class Game:
         self.play_background_music()
         self.clock = pygame.time.Clock()
         
+        self.algorithm= NO_ALGORITHM
+        self.actions = deque([])
+        self.simulations=[]
+        self.simulationImg=SIMULATION_IMG.convert_alpha()
+        self.simulationImg_rect = self.simulationImg.get_rect()
         #menu
         self.menu_surf = pygame.image.load(r'assets\menu\menu-bg.png').convert()
         self.menu_rect = self.menu_surf.get_rect(topleft = (0, 47.73))
@@ -31,7 +42,6 @@ class Game:
         self.sub_algorithm_rect = self.sub_menu_surf.get_rect(topleft=(300, 48))
         self.menu_mode = True
 
-        
         #borders
         self.border_horizontal_top = pygame.Surface((WIDTH_BORDER_BOARD, HEIGHT_BORDER_BOARD))
         self.border_horizontal_top.fill(BODER_COLOR)
@@ -91,6 +101,10 @@ class Game:
     def reset(self):
         self.snake = Snake(self.surface)
         self.food = Food(self.surface)
+        # print(self.snake.x)
+        # print(self.snake.y)
+        # print(self.food.x)
+        # print(self.food.x)
 
     def is_collision(self, x1, y1, x2, y2,d=0):
         if x1 >= x2-d and x1 < x2 + CELL_SIZE+d:
@@ -98,31 +112,59 @@ class Game:
                 return True
         return False
 
+    def create_ValidFood(self):
+        self.food.move()
+        pos_snake=zip(self.snake.x , self.snake.y)
+        
+        while (self.food.x,self.food.y) in pos_snake:
+            print('food failed')
+            self.food.move()
+        # print(self.food.x)
+        # print(self.food.y)
+
     def render_background(self):
         self.surface.fill('black')
         bg = BACKGROUND_IMG.convert_alpha()
         self.surface.blit(bg, (0,0))
 
+    def play_algorithm(self):
+        self.draw_display()
+        self.food.draw() 
+        self.snake.walk()
+        
+        self.display_score()
+        pygame.display.flip()
+        
+        self.check_collision_algorithm() 
+        
+        # print("----------------------------STATE-------------------------")
+        # print(self.snake.x,self.snake.y,sep='\n')
+        # print("Food: ",(self.food.x,self.food.y))
+        # print(self.actions)
+        if len(self.actions)==0:
+            # print(self.snake.x)
+            # print(self.snake.y)
+            # print(self.food.x)
+            # print(self.food.x)
+            self.choose_Algorithm()
+                             
     def play_basic(self):
         self.draw_display()
         self.food.draw()
         self.snake.walk()
         self.display_score()
         pygame.display.flip()
-
         print("-----------------------------------------------------------")
         print(self.snake.x,self.snake.y,sep='\n')
         print("Food: ",(self.food.x,self.food.y))
-       
-        self.check_collision()
-            
+        self.check_collision()   
+    
     def check_collision(self):
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,CELL_SIZE*2):      
-        #if self.snake.head_rect.colliderect(self.food.rect):
             print("eat")
             self.play_sound("ding")
             self.snake.increase_length()
-            self.food.move()
+            self.food.move()  
         
         if self.snake.x[0] <= CELL_SIZE or self.snake.x[0]>= WIDTH_BOARD-CELL_SIZE or self.snake.y[0] <= CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]>= HEIGHT_BOARD-CELL_SIZE:
             self.play_sound('crash')
@@ -132,8 +174,70 @@ class Game:
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
                 self.play_sound('crash')
                 raise "Collision Occurred"
+    
+    def GreedyAlgorithm(self):
+        greedy= GREEDY(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        self.actions = deque(greedy.greedy())
+        self.simulations=greedy.moved_pos
+        self.draw_Simulations()
+    
+    def BFSAlgorithm(self):
+        bfs = BFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        self.actions = deque(bfs.bfs())
+        self.simulations= bfs.moved_pos
+        self.draw_Simulations()
+    
+    def DFSAlgorithm(self):
+        dfs = DFS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        self.actions = deque(dfs.dfs())
+        self.simulations= dfs.moved_pos
+        self.draw_Simulations()
+    
+    def UCSAlgorithm(self):
+        ucs=UCS(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        self.actions = deque(ucs.ucs())
+        self.simulations= ucs.moved_pos
+        self.draw_Simulations()
+        
+    def AStarAlgorithm(self):
+        astar=ASTAR(self.snake.x,self.snake.y,self.food.x,self.food.y)
+        self.actions = deque(astar.a_star())
+        self.simulations= astar.moved_pos
+        #print('moved_pos=', len(astar.moved_pos))
+        self.draw_Simulations()
+    
+    def draw_Simulations(self):
+        #count=0
+        for simu in self.simulations:
+            #count+=1
+            simu_posGame = (np.array(simu)+1)*CELL_SIZE
+            self.simulationImg_rect.center = tuple(simu_posGame)
+            self.surface.blit(self.simulationImg, self.simulationImg_rect)
+            pygame.display.flip()
+        #print("count=", count)
+
+    def check_collision_algorithm(self):
+        if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,0):      
+            #print("eat")
+            self.play_sound("ding")
+            self.snake.increase_length()   
+            self.create_ValidFood()
+            self.food.draw() 
+        if self.snake.x[0] < CELL_SIZE or self.snake.x[0]> WIDTH_BOARD-CELL_SIZE or self.snake.y[0] < CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]> HEIGHT_BOARD-CELL_SIZE:
+            print("Collision with Obstacle")
+            self.play_sound('crash')
+            raise "Collision Occurred"
+        for i in range(3, self.snake.length):
+            if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
+                self.play_sound('crash')
+                print("Collision with itself")
+                raise "Collision Occurred"       
             
     def draw_display(self):
+        # print(self.snake.x)
+        # print(self.snake.y)
+        # print(self.food.x)
+        # print(self.food.y)
         self.surface.fill('black')
         self.render_background() 
         self.surface.blit(self.navbar,(0,0))
@@ -145,19 +249,6 @@ class Game:
             if self.mode_menu_open:
                 self.mode_menu_open = self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_algorithm_list, self.mode_menu_open)
                 
-    def play_algorithm(self):
-        self.draw_display()
-        self.snake.draw()
-        self.food.draw()
-        self.display_score()
-        pygame.display.flip()
-
-        # snake eating food scenario
-        print("-----------------------------------------------------------")
-        print(self.snake.x,self.snake.y,sep='\n')
-        print("Food: ",(self.food.x,self.food.y))
-        self.check_collision()  
-    
     def display_score(self):
         self.btn_menu_list[1].text=f"{self.snake.length-10}"
 
@@ -187,34 +278,47 @@ class Game:
             btn.draw()
     
     def displayMovement(self,move):
-        if move == "left":
-            if self.snake.direction=='up' or self.snake.direction=='down':
+        if move == LEFT:
+            if self.snake.direction==UP or self.snake.direction==DOWN:
                 self.snake.move_left()
 
-        if move == "right":
-            if self.snake.direction=='up' or self.snake.direction=='down':
+        if move == RIGHT:
+            if self.snake.direction==UP or self.snake.direction==DOWN:
                 self.snake.move_right()
 
-        if move == "up":
-            if self.snake.direction=='left' or self.snake.direction=='right':
+        if move == UP:
+            if self.snake.direction==LEFT or self.snake.direction==RIGHT:
                 self.snake.move_up()
 
-        if move == "down":
-            if self.snake.direction=='left' or self.snake.direction=='right':
+        if move == DOWN:
+            if self.snake.direction==LEFT or self.snake.direction==RIGHT:
                 self.snake.move_down()
+    
+    def choose_Algorithm(self):
+        if self.algorithm == GREEDY_ALGORITHM:
+            self.GreedyAlgorithm()
+        elif self.algorithm == BFS_ALGORITHM:
+            self.BFSAlgorithm()
+        elif self.algorithm == UCS_ALGORITHM:
+            self.UCSAlgorithm()
+        elif self.algorithm == DFS_ALGORITHM:
+            self.DFSAlgorithm()
+        elif self.algorithm==ASTAR_ALGORITHM:
+            self.AStarAlgorithm()
     
     def run_algorithm(self):
         running = True
         pause = False
-        moves = deque(["right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","right","down","down","down","down","down"])
-
+        self.choose_Algorithm()
         while running:
-            if len(moves)==0:
-                pause = False
-                
-            if not pause:
-                move = moves.popleft()
-                print(move)
+            # print("----------------------------State-------------------------")
+            # print(self.snake.x,self.snake.y,sep='\n')
+            # print("Food: ",(self.food.x,self.food.y))
+            # print(self.actions)
+            if self.actions==None:
+                running=False
+            if(len(self.actions)>0):        
+                move = self.actions.popleft()
                 self.displayMovement(move)
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
@@ -259,10 +363,14 @@ class Game:
                     pygame.display.flip()
             except Exception as e:
                 print(e)
+                print("----------------------------ERROR-------------------------")
+                print(self.snake.x,self.snake.y,sep='\n')
+                print("Food: ",(self.food.x,self.food.y))
+                print(self.actions)
                 self.show_game_over()
                 pause = True
                 self.reset()
-            self.clock.tick(5)
+            self.clock.tick(FPS)
     
     def run_basic(self):
         running = True
@@ -279,16 +387,16 @@ class Game:
                     if not pause:
                   
                         if event.key == K_LEFT:
-                           self.displayMovement("left")
+                           self.displayMovement(LEFT)
 
                         if event.key == K_RIGHT:
-                            self.displayMovement("right")
+                            self.displayMovement(RIGHT)
 
                         if event.key == K_UP:
-                            self.displayMovement("up")
+                            self.displayMovement(UP)
 
                         if event.key == K_DOWN:
-                            self.displayMovement("down")
+                            self.displayMovement(DOWN)
                 if event.type == pygame.QUIT:
                     running = False
                     pygame.quit()
@@ -329,8 +437,12 @@ class Game:
                 self.show_game_over()
                 pause = True
                 self.reset()
-            self.clock.tick(60)
+            self.clock.tick(FPS)
 
     def start(self):
-        #self.run_algorithm()
-        self.run_basic()
+        self.algorithm=DFS_ALGORITHM
+        self.run_algorithm()
+        #self.run_basic()
+
+# gem = Game()
+# gem.start()

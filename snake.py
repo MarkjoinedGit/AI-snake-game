@@ -1,41 +1,39 @@
 import pygame
 from pygame.locals import *
 from static import *
-
-# GAME_WIDTH= WIDTH_BOARD - 2*CELL_SIZE
-# GAME_HEIGHT= HEIGHT_BOARD - 2*CELL_SIZE - HEIGHT_NAVBAR
-
+from skin import *
 class Snake:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
         
-        self.direction = 'down'
-        self.block = SNAKE_BLOCK_IMG.convert_alpha()
+        self.snake_skin = Skin(SkinName=SKIN_5)
+        self.direction = LEFT
+        self.block = self.snake_skin.block.convert_alpha()
         self.block_rect = self.block.get_rect()
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
         self.length = 10
-        self.x = [CELL_SIZE*20]*self.length
-        self.y = [CELL_SIZE*20]*self.length
-
+        self.x = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
+        self.y = [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
+        
     def move_left(self):
-        self.direction = 'left'
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.direction = LEFT
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
 
     def move_right(self):
-        self.direction = 'right'
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.direction = RIGHT
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
 
     def move_up(self):
-        self.direction = 'up'
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.direction = UP
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
 
     def move_down(self):
-        self.direction = 'down'
-        self.head = SNAKE_HEAD_IMG[self.direction].convert_alpha()
+        self.direction = DOWN
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
 
     def walk(self):
@@ -45,29 +43,28 @@ class Snake:
             self.y[i] = self.y[i-1]
         speed = CELL_SIZE
         # update head
-        if self.direction == 'left':
+        if self.direction == LEFT:
             self.x[0] -= speed
             
-        if self.direction == 'right':
+        if self.direction == RIGHT:
             self.x[0] += speed
             
-        if self.direction == 'up':
+        if self.direction == UP:
             self.y[0] -= speed
-        if self.direction == 'down':
+        if self.direction == DOWN:
             self.y[0] += speed
         self.draw()
 
     def draw(self):
-        d=0
         for i in range(self.length-1,-1,-1):         
-            if self.direction=='left':                
-                self.head_rect.center = (self.x[i]-d, self.y[i])        
-            elif self.direction=='right':           
-                self.head_rect.center = (self.x[i]+d, self.y[i])        
-            elif self.direction=='up':               
-                self.head_rect.center = (self.x[i], self.y[i]-d)        
-            elif self.direction=='down':
-                self.head_rect.center = (self.x[i], self.y[i]+d)       
+            if self.direction==LEFT:                
+                self.head_rect.center = (self.x[i], self.y[i])        
+            elif self.direction==RIGHT:           
+                self.head_rect.center = (self.x[i], self.y[i])        
+            elif self.direction==UP:               
+                self.head_rect.center = (self.x[i], self.y[i])        
+            elif self.direction==DOWN:
+                self.head_rect.center = (self.x[i], self.y[i])       
                              
             if(i==0):                  
                 self.parent_screen.blit(self.head, self.head_rect)
@@ -81,3 +78,8 @@ class Snake:
         self.length += 1
         self.x.append(-1)
         self.y.append(-1)
+        
+    def changeSkin(self,skinname):
+        self.snake_skin= Skin(skinname)
+        self.block = self.snake_skin.block.convert_alpha()
+        self.head = self.snake_skin.head[self.direction].convert_alpha()
