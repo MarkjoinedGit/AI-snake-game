@@ -90,6 +90,8 @@ class Game:
         self.setting_menu_open = False
 
         #data
+        self.actions_total = []
+        self.moved_pos_total = []
         self.actions_total_count=0
         self.moved_pos_total_count=0
 
@@ -214,7 +216,9 @@ class Game:
         self.draw_Simulations()
     
     def draw_Simulations(self):
+        self.actions_total.append(len(self.actions))
         self.actions_total_count+=len(self.actions)
+        self.moved_pos_total.append(len(self.simulations))
         self.moved_pos_total_count+=len(self.simulations)
         # for simu in self.simulations:
         #     simu_posGame = (np.array(simu)+1)*CELL_SIZE
@@ -371,8 +375,10 @@ class Game:
                 # # print(self.snake.x,self.snake.y,sep='\n')
                 # # print("Food: ",(self.food.x,self.food.y))
                 # # print(self.actions)
-                print(self.actions_total_count)
-                print(self.moved_pos_total_count)
+                print("action len list=", self.actions_total)
+                print("action total count=", self.actions_total_count)
+                print("moved_pos len list=",self.moved_pos_total)
+                print("moved_pos total cound=",self.moved_pos_total_count)
                 self.run_time=time.time()-start_time
                 print(self.run_time)
                 self.show_game_over()
@@ -448,5 +454,5 @@ class Game:
             self.clock.tick(FPS)
 
     def start(self):
-        self.algorithm=GREEDY_ALGORITHM
+        self.algorithm=UCS_ALGORITHM
         self.run_algorithm()
