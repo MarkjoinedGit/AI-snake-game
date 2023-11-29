@@ -494,4 +494,3 @@ class Game:
         self.algorithm=DFS_ALGORITHM
         self.obstacles= MAP['Normal']
         self.run_algorithm()
-gi
