@@ -34,6 +34,9 @@ class Game:
         self.simulations=[]
         self.simulationImg=SIMULATION_IMG.convert_alpha()
         self.simulationImg_rect = self.simulationImg.get_rect()
+        self.run_time = 0
+        
+        
         #menu
         self.menu_surf = pygame.image.load(r'assets\menu\menu-bg.png').convert()
         self.menu_rect = self.menu_surf.get_rect(topleft = (0, 47.73))
@@ -150,6 +153,8 @@ class Game:
             # print(self.food.x)
             # print(self.food.x)
             self.choose_Algorithm()
+        
+        
                              
     def play_basic(self):
         self.draw_display()
@@ -211,13 +216,11 @@ class Game:
     def draw_Simulations(self):
         self.actions_total_count+=len(self.actions)
         self.moved_pos_total_count+=len(self.simulations)
-        for simu in self.simulations:
-            #count+=1
-            simu_posGame = (np.array(simu)+1)*CELL_SIZE
-            self.simulationImg_rect.center = tuple(simu_posGame)
-            self.surface.blit(self.simulationImg, self.simulationImg_rect)
-            pygame.display.flip()
-        #print("count=", count)
+        # for simu in self.simulations:
+        #     simu_posGame = (np.array(simu)+1)*CELL_SIZE
+        #     self.simulationImg_rect.center = tuple(simu_posGame)
+        #     self.surface.blit(self.simulationImg, self.simulationImg_rect)
+        #     pygame.display.flip()
 
     def check_collision_algorithm(self):
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,0):      
@@ -308,12 +311,14 @@ class Game:
     def run_algorithm(self):
         running = True
         pause = False
+        start_time= time.time()
         self.choose_Algorithm()
         while running:
             # print("----------------------------State-------------------------")
             # print(self.snake.x,self.snake.y,sep='\n')
             # print("Food: ",(self.food.x,self.food.y))
             # print(self.actions)
+            
             if self.actions==None:
                 running=False
             if(len(self.actions)>0):        
@@ -362,14 +367,14 @@ class Game:
                     pygame.display.flip()
             except Exception as e:
                 print(e)
-                print("----------------------------ERROR-------------------------")
-                # print(self.snake.x,self.snake.y,sep='\n')
-                # print("Food: ",(self.food.x,self.food.y))
-                # print(self.actions)
+                # print("----------------------------ERROR-------------------------")
+                # # print(self.snake.x,self.snake.y,sep='\n')
+                # # print("Food: ",(self.food.x,self.food.y))
+                # # print(self.actions)
                 print(self.actions_total_count)
                 print(self.moved_pos_total_count)
-                self.actions_total_count=0
-                self.moved_pos_total_count=0
+                self.run_time=time.time()-start_time
+                print(self.run_time)
                 self.show_game_over()
                 pause = True
                 self.reset()
@@ -443,5 +448,5 @@ class Game:
             self.clock.tick(FPS)
 
     def start(self):
-        self.algorithm=BFS_ALGORITHM
+        self.algorithm=GREEDY_ALGORITHM
         self.run_algorithm()
