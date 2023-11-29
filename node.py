@@ -72,9 +72,6 @@ class Node:
         return self.h 
     
     def is_collision(self):
-        # if self.snakeX[0] >= self.foodX and self.snakeX[0] < self.foodX + CELL_SIZE:
-        #     if self.snakeY[0] >= self.foodY and self.snakeY[0] < self.foodY + CELL_SIZE:
-        #         return True
         if self.snakeX[0] == self.foodX and self.snakeY[0] == self.foodY:
             return True
         return False
