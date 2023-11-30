@@ -12,36 +12,6 @@ from ucs import *
 from dfs import *
 from a_star import *
 
-MODES={
-    'Basic':BASIC_MODE,
-    'Algorithm':ALGORITHM_MODE
-}
-
-MAPS={
-    'Easy':MAP0,
-    'Normal':MAP1,
-    'Difficult':MAP2
-    }
-
-SKINS={
-    'snake-blue':SKIN_1,
-    'anaconda':SKIN_2,
-    'crocodile':SKIN_3,
-    'frog':SKIN_4,
-    'pig':SKIN_5,
-    'sheep':SKIN_6,
-    'snake':SKIN_7,
-    'unicorn':SKIN_8
-    }
-
-ALGORITHMS= {
-    'BFS':BFS_ALGORITHM,
-    'DFS':DFS_ALGORITHM,
-    'UCS':UCS_ALGORITHM,
-    'GREEDY':GREEDY_ALGORITHM,
-    'A-STAR':ASTAR_ALGORITHM
-    }
-
 class Game:
     def __init__(self):
         pygame.init()
@@ -55,12 +25,15 @@ class Game:
         self.mode=BASIC_MODE
         self.algorithm= BFS_ALGORITHM
         self.obstacles=set()
-        
+        self.paths_pos=[]
         self.play_background_music()
         self.clock = pygame.time.Clock()
         
         self.simulationImg=SIMULATION_IMG.convert_alpha()
         self.simulationImg_rect = self.simulationImg.get_rect()
+        
+        self.pathImg=PATH_IMG.convert_alpha()
+        self.pathImg_rect = self.pathImg.get_rect()
         
         self.obstacleImg=OBSTACLE_IMG.convert_alpha()
         self.obstacleImg_rect = self.simulationImg.get_rect()
@@ -93,13 +66,14 @@ class Game:
         self.btn_image = r'assets\btn.png'
         self.btn_surf = pygame.image.load(self.btn_image).convert_alpha()
         self.btn_rect = self.btn_surf.get_rect(center=(525, 375))
-        self.btn_list_func = ['MENU', '0', 'PLAY', 'NEW']
+        self.btn_list_func = ['MENU', '0','0ms','0','0', 'PLAY', 'NEW']
         self.btn_list_mode = ['Basic','Algorithm', 'Skin', 'Map','Draw-Map', 'Simulations']
         self.btn_list_otps = []
         self.btn_list_otps = []
         #text_font 
         self.text_font = pygame.font.Font(r'assets\font\Inknut_Antiqua\InknutAntiqua-Bold.ttf', 18)
         self.init_menu()
+        
         self.mode_is_click=False
         self.otp_is_click = False
         self.choose_algorithm=False
@@ -107,8 +81,6 @@ class Game:
         self.choose_map=False
         self.is_Draw_Map_Mode = False
         self.is_Simulations_Mode = False
-
-       
 
         #data
         self.actions_total = []
@@ -136,7 +108,7 @@ class Game:
          #buttons
         self.btn_menu_list = []
         for i in range(len(self.btn_list_func)):
-            button = btn.Button(self.surface, self.text_font, f'{self.btn_list_func[i]}', 100, 40, (200 +i*200, 5), True, WHITE, GREEN_HOVER, WHITE, GREEN_HOVER)
+            button = btn.Button(self.surface, self.text_font, f'{self.btn_list_func[i]}', 140, 40, (150 +i*150, 5), True, WHITE, GREEN_HOVER, WHITE, GREEN_HOVER)
             self.btn_menu_list.append(button)
 
         #buttons_sub_menu_mode
@@ -168,11 +140,7 @@ class Game:
     def reset(self):
         self.snake = Snake(self.surface)
         self.food = Food(self.surface)
-        # print(self.snake.x)
-        # print(self.snake.y)
-        # print(self.food.x)
-        # print(self.food.x)
-
+    
     def is_collision(self, x1, y1, x2, y2,d=0):
         if x1 >= x2-d and x1 < x2 + CELL_SIZE+d:
             if y1 >= y2-d and y1 <y2 + CELL_SIZE+d:
@@ -205,11 +173,11 @@ class Game:
         # print("Food: ",(self.food.x,self.food.y))
         # print(self.actions)
         if len(self.actions)==0:
-            # print(self.snake.x)
-            # print(self.snake.y)
-            # print(self.food.x)
-            # print(self.food.x)
-            self.choose_Algorithm()       
+            self.choose_Algorithm()
+        self.display_runtime()
+        self.display_count_path()
+        self.display_count_visited()
+        self.draw_Simulations()       
                              
     def play_basic(self):
         self.draw_display()
@@ -243,44 +211,67 @@ class Game:
     def GreedyAlgorithm(self):
         greedy= GREEDY(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(greedy.greedy())
+        self.run_time=greedy.run_time
         self.simulations=greedy.moved_pos
-        self.draw_Simulations()
-    
+        self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
+        self.draw_Simulations_vip()
+           
     def BFSAlgorithm(self):
         bfs = BFS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(bfs.bfs())
+        self.run_time=bfs.run_time
         self.simulations= bfs.moved_pos
-        self.draw_Simulations()
+        self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
+        self.draw_Simulations_vip()
     
     def DFSAlgorithm(self):
         dfs = DFS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(dfs.dfs())
+        self.run_time=dfs.run_time
         self.simulations= dfs.moved_pos
-        self.draw_Simulations()
+        self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
+        self.draw_Simulations_vip()
     
     def UCSAlgorithm(self):
         ucs=UCS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(ucs.ucs())
+        self.run_time=ucs.run_time
         self.simulations= ucs.moved_pos
-        self.draw_Simulations()
+        self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
+        self.draw_Simulations_vip()
         
     def AStarAlgorithm(self):
         astar=ASTAR(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(astar.a_star())
+        self.run_time=astar.run_time
         self.simulations= astar.moved_pos
-        self.draw_Simulations()
+        self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
+        self.draw_Simulations_vip()
     
     def draw_Simulations(self):
-        self.actions_total.append(len(self.actions))
-        self.actions_total_count+=len(self.actions)
-        self.moved_pos_total.append(len(self.simulations))
-        self.moved_pos_total_count+=len(self.simulations)
         if self.is_Simulations_Mode==False:
             return
-        for simu in self.simulations :
-            simu_posGame = (np.array(simu)+1)*CELL_SIZE
-            self.simulationImg_rect.center = tuple(simu_posGame)
+        for simu in self.simulations:
+            pos = tuple(posMatrix_to_posGame_list(simu))
+            if pos in self.paths_pos:
+                self.pathImg_rect.center = tuple(pos)
+                self.surface.blit(self.pathImg, self.pathImg_rect)
+            else:
+                self.simulationImg_rect.center = tuple(pos)
+                self.surface.blit(self.simulationImg, self.simulationImg_rect)
+        pygame.display.flip()
+    
+    def draw_Simulations_vip(self):
+        if self.is_Simulations_Mode==False:
+            return
+        for simu in self.simulations:
+            pos = tuple(posMatrix_to_posGame_list(simu))
+            self.simulationImg_rect.center = tuple(pos)
             self.surface.blit(self.simulationImg, self.simulationImg_rect)
+            pygame.display.flip()
+        for pos in self.paths_pos:
+            self.pathImg_rect.center = tuple(pos)
+            self.surface.blit(self.pathImg, self.pathImg_rect)
             pygame.display.flip()
 
     def check_collision_algorithm(self):
@@ -289,6 +280,7 @@ class Game:
             self.snake.increase_length()   
             self.create_ValidFood()
             self.food.draw() 
+        
         if self.snake.x[0] < CELL_SIZE or self.snake.x[0]> WIDTH_BOARD-CELL_SIZE or self.snake.y[0] < CELL_SIZE+HEIGHT_NAVBAR or self.snake.y[0]> HEIGHT_BOARD-CELL_SIZE:
             print("Collision with Obstacle")
             self.play_sound('crash')
@@ -313,6 +305,15 @@ class Game:
                 
     def display_score(self):
         self.btn_menu_list[1].text=f"{self.snake.length-10}"
+        
+    def display_runtime(self):
+        self.btn_menu_list[2].text=f"{int(self.run_time)}ms"
+        
+    def display_count_visited(self):
+        self.btn_menu_list[3].text=f"{len(self.simulations)}"
+        
+    def display_count_path(self):
+        self.btn_menu_list[4].text=f"{len(self.paths_pos)}"
 
     def show_game_over(self):
         self.render_background()
@@ -390,6 +391,7 @@ class Game:
             self.obstacles.add((mouse_x// CELL_SIZE * CELL_SIZE, mouse_y// CELL_SIZE * CELL_SIZE))
         if pygame.mouse.get_pressed()[2]:
             self.obstacles.discard((mouse_x// CELL_SIZE * CELL_SIZE, mouse_y// CELL_SIZE * CELL_SIZE))
+    
     def draw_obstacles(self):
         if len(self.obstacles)==0:
             return
@@ -400,10 +402,12 @@ class Game:
     def run_algorithm(self):
         running = True
         pause = False
+        pygame.display.flip()
+        
         if self.is_Draw_Map_Mode:
             self.get_obstacles()
             self.is_Draw_Map_Mode=False
-        start_time= time.time()
+        # start_time= time.time()
         self.choose_Algorithm()
         
         while running:
@@ -520,6 +524,7 @@ class Game:
                             self.init_NewStateGame()
                             self.btn_sub_opts_list=[]
                             self.init_menu()
+                            pygame.display.flip()
                             return
                     pygame.display.flip()
             except Exception as e:
@@ -543,6 +548,7 @@ class Game:
     def run_basic(self):
         running = True
         pause = False
+        pygame.display.flip()
         
         if self.is_Draw_Map_Mode:
             self.get_obstacles()
