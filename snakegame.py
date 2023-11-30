@@ -285,7 +285,6 @@ class Game:
 
     def check_collision_algorithm(self):
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,0):      
-            #print("eat")
             self.play_sound("ding")
             self.snake.increase_length()   
             self.create_ValidFood()
@@ -389,7 +388,8 @@ class Game:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         if pygame.mouse.get_pressed()[0]:
             self.obstacles.add((mouse_x// CELL_SIZE * CELL_SIZE, mouse_y// CELL_SIZE * CELL_SIZE))
-        
+        if pygame.mouse.get_pressed()[2]:
+            self.obstacles.discard((mouse_x// CELL_SIZE * CELL_SIZE, mouse_y// CELL_SIZE * CELL_SIZE))
     def draw_obstacles(self):
         if len(self.obstacles)==0:
             return
@@ -540,7 +540,6 @@ class Game:
                 self.reset()
             self.clock.tick(FPS)
     
-
     def run_basic(self):
         running = True
         pause = False
@@ -677,9 +676,6 @@ class Game:
             self.clock.tick(FPS//2)
 
     def start(self):
-        # self.algorithm=DFS_ALGORITHM
-        # self.obstacles= MAP['Normal']
-        # self.run_algorithm()
         while True:
             if(self.mode==ALGORITHM_MODE):
                 self.run_algorithm()
