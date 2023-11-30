@@ -21,6 +21,8 @@ UCS_ALGORITHM='UCS'
 BFS_ALGORITHM='BFS'
 DFS_ALGORITHM='DFS'
 ASTAR_ALGORITHM='A-STAR'
+HILL_CLIMBING_ALGORITHM='HILL-CLIMBING'
+IDS_ALGORITHM='IDS'
 BASIC_MODE='Basic'
 
 #MENU
@@ -85,8 +87,10 @@ ALGORITHMS= {
     'DFS':DFS_ALGORITHM,
     'UCS':UCS_ALGORITHM,
     'GREEDY':GREEDY_ALGORITHM,
-    'A-STAR':ASTAR_ALGORITHM
-    }
+    'A-STAR':ASTAR_ALGORITHM,
+    'HILL-CLIMBING':HILL_CLIMBING_ALGORITHM,
+    'IDS': IDS_ALGORITHM
+}
 
 BACKGROUND_IMG=pygame.image.load(r'assets\background.png')
 
@@ -95,8 +99,6 @@ SIMULATION_IMG=pygame.image.load(r'assets\simulation.png')
 PATH_IMG=pygame.image.load(r'assets\path.png')
 
 OBSTACLE_IMG = pygame.transform.scale(pygame.image.load(r'assets\obstacle.png'),(CELL_SIZE,CELL_SIZE))
-
-
 
 
 
@@ -128,12 +130,7 @@ DEPTH_LIMIT = 10
 
 DIRECTIONS = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
 
-
-
-
-
-
-
+MAX_DEPTH=10
 
 
 def posGame_to_posMatrix(a):

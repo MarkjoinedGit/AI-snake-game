@@ -20,12 +20,6 @@ class DFS:
     
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
-        
-    def is_collision(self, x1, y1, x2, y2,d=0):
-        if x1 >= x2-d and x1 < x2 + 1+d:
-            if y1 >= y2-d and y1 <y2 + 1+d:
-                return True
-        return False
     
     def check_stuck_posible(self, mat, visited, row, col):
         directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
@@ -42,6 +36,7 @@ class DFS:
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
         tempX = self.X.copy()
         tempY = self.Y.copy()
+        current_path = []
 
         visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))] 
 
@@ -51,6 +46,7 @@ class DFS:
         while stack:
             node = stack.pop()
             (pt, path, tempX, tempY, mat) = (node[0], node[1], node[2], node[3], node[4])
+            current_path=path
             (row, col) = (pt[0], pt[1])
             directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
             for d in directions:
@@ -68,4 +64,11 @@ class DFS:
                     newNode.obstacles = self.obstacles
                     newMat, newTempX, newTempY = newNode.CreateState(), newNode.snakeX, newNode.snakeY  
                     stack.append(((newRow, newCol), newPath, newTempX, newTempY, newMat))
-        return None
+        return current_path
+    
+# X = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
+# Y= [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
+# food_x = 50
+# food_y = 150
+# ids = DFS(X, Y, food_x, food_y, set())
+# print(ids.dfs())

@@ -11,6 +11,8 @@ from greedy import *
 from ucs import *
 from dfs import *
 from a_star import *
+from hill_climbing import *
+from ids import *
 
 class Game:
     def __init__(self):
@@ -150,7 +152,7 @@ class Game:
     def create_ValidFood(self):
         self.food.move()
         pos_not_valid= set(zip(self.snake.x , self.snake.y)).union(self.obstacles)
-        while  (self.food.x,self.food.y) in pos_not_valid:
+        while (self.food.x,self.food.y) in pos_not_valid:
             self.food.move()
 
     def render_background(self):
@@ -231,6 +233,13 @@ class Game:
         self.simulations= dfs.moved_pos
         self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
         self.draw_Simulations_vip()
+        self.draw_Simulations()
+
+    def IDSAlgorithm(self):
+        ids = IDS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
+        self.actions = deque(ids.ids())
+        self.simulations= ids.moved_pos
+        self.draw_Simulations()
     
     def UCSAlgorithm(self):
         ucs=UCS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
@@ -241,12 +250,22 @@ class Game:
         self.draw_Simulations_vip()
         
     def AStarAlgorithm(self):
+        print(self.snake.x)
+        print(self.snake.y)
+        print(self.food.x)
+        print(self.food.y)
         astar=ASTAR(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(astar.a_star())
         self.run_time=astar.run_time
         self.simulations= astar.moved_pos
         self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
         self.draw_Simulations_vip()
+    
+    def HillClimbingAlgorithm(self):
+        hill=HillClimbing(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
+        self.actions = deque(hill.hill_climbing())
+        self.simulations= hill.moved_pos
+        self.draw_Simulations()
     
     def draw_Simulations(self):
         if self.is_Simulations_Mode==False:
@@ -362,12 +381,16 @@ class Game:
             self.GreedyAlgorithm()
         elif self.algorithm == BFS_ALGORITHM:
             self.BFSAlgorithm()
+        elif self.algorithm==IDS_ALGORITHM:
+            self.IDSAlgorithm()
         elif self.algorithm == UCS_ALGORITHM:
             self.UCSAlgorithm()
         elif self.algorithm == DFS_ALGORITHM:
             self.DFSAlgorithm()
         elif self.algorithm==ASTAR_ALGORITHM:
             self.AStarAlgorithm()
+        elif self.algorithm==HILL_CLIMBING_ALGORITHM:
+            self.HillClimbingAlgorithm()
     
     def get_obstacles(self):
         running=True

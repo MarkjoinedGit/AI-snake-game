@@ -16,53 +16,8 @@ class ASTAR:
         self.node = Node(self.X, self.Y, self.food_x, self.food_y)
         self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
-        self.moved_pos=[]  
-        self.run_time=0   
-    def get_possible_moves(self, matrix):
-        moves = []
-        head_pos = np.where(matrix==1)
-        head_pos_x = head_pos[1][0]
-        head_pos_y = head_pos[0][0]
+        self.moved_pos=[] 
 
-        if head_pos_x > 0:
-            if matrix[head_pos_y][head_pos_x-1] == 0 or matrix[head_pos_y][head_pos_x-1] == -1:
-                moves.append(LEFT)
-        if head_pos_x < WIDTH_BOARD//CELL_SIZE-1:
-            if matrix[head_pos_y][head_pos_x+1] == 0 or matrix[head_pos_y][head_pos_x+1] == -1:
-                moves.append(RIGHT)
-        if head_pos_y > 0:
-            if matrix[head_pos_y-1][head_pos_x] == 0 or matrix[head_pos_y-1][head_pos_x] == -1:
-                moves.append(UP)
-        if head_pos_y < HEIGHT_BOARD//CELL_SIZE-1: 
-            if matrix[head_pos_y+1][head_pos_x] == 0 or matrix[head_pos_y+1][head_pos_x] == -1:
-                moves.append(DOWN)
-
-        return moves
-
-    def perform_move(self, matrix, move, tempX, tempY):
-        val_x = tempX[0]
-        val_y = tempY[0]
-        tempX = np.roll(tempX, 1)
-        tempY = np.roll(tempY, 1)
-        speed = CELL_SIZE
-
-        if move == LEFT:
-            tempX[0] = val_x - speed
-            tempY[0] = val_y
-        if move == RIGHT:
-            tempX[0] = val_x + speed
-            tempY[0] = val_y
-        if move == UP:
-            tempY[0] = val_y - speed 
-            tempX[0] = val_x
-        if move == DOWN:
-            tempY[0] = val_y + speed 
-            tempX[0] = val_x  
-        new_node = Node(tempX, tempY, self.food_x, self.food_x)
-        new_node.obstacles=self.obstacles
-        new_matrix = new_node.CreateState()
-        return new_matrix, tempX, tempY
-    
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
     
@@ -85,6 +40,7 @@ class ASTAR:
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
         tempX = self.X.copy()
         tempY = self.Y.copy()
+        current_path = []
 
         visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
         self.visited_cost = set()
@@ -97,6 +53,7 @@ class ASTAR:
         while not q.empty():
             node = q.get()
             (F, cost, pt, path, tempX, tempY, mat) = (node[0], node[1], node[2], node[3], node[4], node[5], node[6])
+            current_path = path
             self.visited_cost.add((pt))
 
             (row, col) = (pt[0], pt[1])
@@ -121,10 +78,5 @@ class ASTAR:
                     f = newCost + newH
                     q.put((f, newCost, (newRow, newCol), newPath, newTempX, newTempY, newMat))
 
-        return Queue()
-    
-    def is_collision(self, x1, y1, x2, y2,d=0):
-        if x1 >= x2-d and x1 < x2 + 1+d:
-            if y1 >= y2-d and y1 <y2 + 1+d:
-                return True
-        return False
+        return current_path
+
