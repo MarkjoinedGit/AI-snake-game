@@ -19,8 +19,6 @@ class Node:
         self.f = 1000000
         self.parent = None
         self.obstacles = set()
-        
-    
     
     def getPos_Matrix(self,pos):
         return (pos//CELL_SIZE)-1
@@ -38,16 +36,20 @@ class Node:
         print(self.CreateState())
     
     def CreateObstacle(self,matrix):
-        matrix[:H,0] = OBSTACLE
+        matrix[:H, 0] = OBSTACLE
+        matrix[:H, 1] = OBSTACLE
+
         matrix[-1, :W] = OBSTACLE
+        matrix[-2, :W] = OBSTACLE
+        
         matrix[:H, -1] = OBSTACLE
-        for i in range(NAV_H):
+        matrix[:H, -2] = OBSTACLE
+        for i in range(NAV_H+1):
             matrix[i,:W] = OBSTACLE
         
         for o_x,o_y in self.obstacles:
             matrix[posGame_to_posMatrix(o_y),posGame_to_posMatrix(o_x)]=OBSTACLE
         return matrix
-
         
     def move(self, move):
         new_node = self.copy_myself()
