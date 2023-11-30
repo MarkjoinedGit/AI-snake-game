@@ -18,7 +18,6 @@ class BFS:
         self.matrix_state = self.node.CreateState()
         self.moved_pos = []
         
-        
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
     
@@ -36,6 +35,7 @@ class BFS:
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
         tempX = self.X.copy()
         tempY = self.Y.copy()
+        current_path=[]
 
         visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
 
@@ -49,6 +49,7 @@ class BFS:
             (pt, path, tempX, tempY, mat) = (node[0], node[1], node[2], node[3], node[4])
             (row, col) = (pt[0], pt[1])
             directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
+            current_path = path
             for d in directions:
                 newRow, newCol = row + d[0], col + d[1]
                 newPath = path + [d[2]]
@@ -64,10 +65,5 @@ class BFS:
                     newMat, newTempX, newTempY = newNode.CreateState(), newNode.snakeX, newNode.snakeY                
                     q.put(((newRow, newCol), newPath, newTempX, newTempY, newMat))
 
-        return Queue()
+        return current_path
     
-    def is_collision(self, x1, y1, x2, y2,d=0):
-        if x1 >= x2-d and x1 < x2 + 1+d:
-            if y1 >= y2-d and y1 <y2 + 1+d:
-                return True
-        return False

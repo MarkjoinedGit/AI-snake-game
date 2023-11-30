@@ -41,6 +41,7 @@ class GREEDY:
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
         tempX = self.X.copy()
         tempY = self.Y.copy()
+        current_path = []
 
         visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
         self.visited_cost = set()
@@ -54,11 +55,7 @@ class GREEDY:
             node = q.get()
             (H, pt, path, tempX, tempY, mat) = (node[0], node[1], node[2], node[3], node[4], node[5])
             self.visited_cost.add((pt))
-
-            if self.is_collision(pt[0],pt[1],dest[0],dest[1]):
-                print("greedy: ",pt,dest)
-                return path
-
+            current_path=path
             (row, col) = (pt[0], pt[1])
 
             directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
@@ -79,10 +76,4 @@ class GREEDY:
                     newH = self.heuristic(newRow, newCol, dest[0], dest[1])
                     q.put((newH, (newRow, newCol), newPath, newTempX, newTempY, newMat))
 
-        return Queue()
-    
-    def is_collision(self, x1, y1, x2, y2,d=0):
-        if x1 >= x2-d and x1 < x2 + 1+d:
-            if y1 >= y2-d and y1 <y2 + 1+d:
-                return True
-        return False
+        return current_path
