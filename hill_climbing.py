@@ -54,10 +54,6 @@ class HillClimbing:
                         best_neighbor = d[2]
                         best_neighbor_h = neighbor_h
             if len(neighbors) == 0:
-                print("neighbor_h: ", neighbor_h)
-                print("best_neighbor_h:",best_neighbor_h)
-                print("not find")
-                print(current_path)
                 return current_path
             best_neighbor = min(neighbors, key=lambda x: abs(dest[0] - x[0]) + abs(dest[1] - x[1]))
             current_path.append(best_neighbor[2])
