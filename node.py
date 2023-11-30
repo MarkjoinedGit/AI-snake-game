@@ -18,7 +18,9 @@ class Node:
         self.g = 0
         self.f = 1000000
         self.parent = None
-        self.time= time.time()
+        self.obstacles = set()
+        
+    
     
     def getPos_Matrix(self,pos):
         return (pos//CELL_SIZE)-1
@@ -31,6 +33,7 @@ class Node:
         matrix=self.CreateObstacle(matrix)
         self.matrix= matrix
         return matrix
+    
     def out(self):      
         print(self.CreateState())
     
@@ -40,7 +43,12 @@ class Node:
         matrix[:H, -1] = OBSTACLE
         for i in range(NAV_H):
             matrix[i,:W] = OBSTACLE
+        
+        for o_x,o_y in self.obstacles:
+            matrix[posGame_to_posMatrix(o_y),posGame_to_posMatrix(o_x)]=OBSTACLE
         return matrix
+
+        
     def move(self, move):
         new_node = self.copy_myself()
         head_x, head_y = new_node.snakeX[0], new_node.snakeY[0]
@@ -101,7 +109,6 @@ class Node:
         if path==None:
             path=[]
         print(f'path({len(path)})= ',path)
-        print('time_create= ',self.time)
         
     def __lt__(self, other):
         return self.f < other.f

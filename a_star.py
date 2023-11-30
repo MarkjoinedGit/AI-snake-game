@@ -7,12 +7,14 @@ from queue import Queue
 import math
 
 class ASTAR:
-    def __init__(self, initial_X, initial_Y, food_x, food_y):
+    def __init__(self, initial_X, initial_Y, food_x, food_y,obstacles):
         self.X = initial_X
         self.Y = initial_Y
         self.food_x = food_x
         self.food_y = food_y
+        self.obstacles =  obstacles
         self.node = Node(self.X, self.Y, self.food_x, self.food_y)
+        self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
         self.moved_pos=[]  
     def get_possible_moves(self, matrix):
@@ -55,7 +57,9 @@ class ASTAR:
         if move == DOWN:
             tempY[0] = val_y + speed 
             tempX[0] = val_x  
-        new_matrix = Node(tempX, tempY, self.food_x, self.food_x).CreateState()
+        new_node = Node(tempX, tempY, self.food_x, self.food_x)
+        new_node.obstacles=self.obstacles
+        new_matrix = new_node.CreateState()
         return new_matrix, tempX, tempY
     
     def isValid(sefl, mat, visited, row, col):
@@ -107,6 +111,7 @@ class ASTAR:
                             continue
                         return newPath
                     newNode = Node(tempX, tempY, self.food_x, self.food_y).move(d[2])
+                    newNode.obstacles=self.obstacles
                     newMat, newTempX, newTempY = newNode.CreateState(), newNode.snakeX, newNode.snakeY
                     newCost = cost + 1
                     newH = self.heuristic(newRow, newCol, dest[0], dest[1]) 

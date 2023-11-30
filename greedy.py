@@ -8,14 +8,17 @@ import time
 import math
 
 class GREEDY:
-    def __init__(self, initial_X, initial_Y, food_x, food_y):
+    def __init__(self, initial_X, initial_Y, food_x, food_y,obstacles):
         self.X = initial_X
         self.Y = initial_Y
         self.food_x = food_x
         self.food_y = food_y
+        self.obstacles= obstacles
         self.node = Node(self.X, self.Y, self.food_x, self.food_y)
+        self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
         self.moved_pos=[]  
+        
 
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
@@ -70,6 +73,7 @@ class GREEDY:
                             continue   
                         return newPath
                     newNode = Node(tempX, tempY, self.food_x, self.food_y).move(d[2])
+                    newNode.obstacles=self.obstacles
                     newMat, newTempX, newTempY = newNode.CreateState(), newNode.snakeX, newNode.snakeY
                     newH = abs(newRow-dest[0]) + abs(newCol-dest[1])  
                     newH = self.heuristic(newRow, newCol, dest[0], dest[1])
