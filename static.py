@@ -14,7 +14,7 @@ HEIGHT_NAVBAR = 50
 
 SIZE_SNAKE_IMG=(CELL_SIZE,CELL_SIZE)
 SIZE_FOOD_IMG=(CELL_SIZE,CELL_SIZE)
-FPS=120
+FPS=20
 
 GREEDY_ALGORITHM='GREEDY'
 UCS_ALGORITHM='UCS'
@@ -96,6 +96,8 @@ BACKGROUND_IMG=pygame.image.load(r'assets\background.png')
 
 SIMULATION_IMG=pygame.image.load(r'assets\simulation.png')
 
+PATH_IMG=pygame.image.load(r'assets\path.png')
+
 OBSTACLE_IMG = pygame.transform.scale(pygame.image.load(r'assets\obstacle.png'),(CELL_SIZE,CELL_SIZE))
 
 
@@ -130,6 +132,7 @@ DIRECTIONS = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
 
 MAX_DEPTH=10
 
+
 def posGame_to_posMatrix(a):
     return (a//CELL_SIZE)-1
 
@@ -142,4 +145,17 @@ def posGame_to_posMatrix_list(l):
 def posMatrix_to_posGame_list(l):
     return (np.array(l)+1)*CELL_SIZE
 
-
+def path_to_pos(head_x,head_y,paths):
+    pos=[]
+    d={
+        LEFT:(0, -1),
+        RIGHT:(0, 1),
+        UP:(-1, 0),
+        DOWN:(1, 0),
+    }
+    x= posGame_to_posMatrix(head_x)
+    y= posGame_to_posMatrix(head_y)
+    for p in paths:
+        y, x = y+d[p][0], x+d[p][1]
+        pos.append(tuple(posMatrix_to_posGame_list((x,y))))
+    return pos

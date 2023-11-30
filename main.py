@@ -91,6 +91,7 @@ while True:
                         print(btn.check_click())
                         print('get in to start mode')
                         start_game = True
+                        
     screen.fill('black')
     if start_game == False:
         screen.blit(nav_bar_surf, nav_bar_rect)

@@ -15,7 +15,8 @@ class DFS:
         self.node = Node(self.X, self.Y, self.food_x, self.food_y)
         self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
-        self.moved_pos=[]  
+        self.moved_pos=[]
+        self.run_time=0   
     
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
@@ -29,6 +30,7 @@ class DFS:
         return False
     
     def dfs(self):
+        start_time=time.time()
         mat = self.matrix_state
         src = ((self.Y[0]//CELL_SIZE)-1, (self.X[0]//CELL_SIZE)-1)
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
@@ -56,6 +58,7 @@ class DFS:
                     if ((newRow, newCol)) == dest:
                         if self.check_stuck_posible(mat, visited, newRow, newCol) == False:
                             continue
+                        self.run_time=(time.time()-start_time)*1000//1
                         return newPath
                     newNode = Node(tempX, tempY, self.food_x, self.food_y).move(d[2])
                     newNode.obstacles = self.obstacles
