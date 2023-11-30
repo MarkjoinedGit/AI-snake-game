@@ -225,7 +225,7 @@ class Game:
     
     def check_collision(self):
         
-        if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,CELL_SIZE*2):      
+        if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,0):     
             print("eat")
             self.play_sound("ding")
             self.snake.increase_length()
