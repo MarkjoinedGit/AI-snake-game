@@ -18,6 +18,7 @@ def draw_sub_menu(menu_list):
     # return False    
 
 pg.init()
+
 screen = pg.display.set_mode((1050, 750))
 pg.display.set_caption('Snather')
 clock = pg.time.Clock()
