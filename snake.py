@@ -6,7 +6,7 @@ class Snake:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
         
-        self.snake_skin = Skin(SkinName=SKIN_5)
+        self.snake_skin = Skin(SkinName=SKIN_1)
         self.direction = LEFT
         self.block = self.snake_skin.block.convert_alpha()
         self.block_rect = self.block.get_rect()

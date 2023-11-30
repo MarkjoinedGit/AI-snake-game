@@ -16,6 +16,25 @@ SIZE_SNAKE_IMG=(CELL_SIZE,CELL_SIZE)
 SIZE_FOOD_IMG=(CELL_SIZE,CELL_SIZE)
 FPS=120
 
+GREEDY_ALGORITHM='GREEDY'
+UCS_ALGORITHM='UCS'
+BFS_ALGORITHM='BFS'
+DFS_ALGORITHM='DFS'
+ASTAR_ALGORITHM='A-STAR'
+BASIC_MODE='Basic'
+
+#MENU
+
+BLACK = (0, 0, 0)
+MENU_COLOR = (163,167,172)
+WHITE = (255, 255, 255)
+BODER_COLOR = (146,163,186)
+NAVBAR_COLOR = (15,15,15)
+GREEN_HOVER = (145, 254, 36)
+BLACK_BLUE = (35, 45, 63)
+BODER_WIDTH = 3
+BODER_COLOR = WHITE
+
 FOOD_IMG = (
     pygame.transform.scale(pygame.image.load(r'assets\foods\food-0.png'),SIZE_FOOD_IMG),
     pygame.transform.scale(pygame.image.load(r'assets\foods\food-1.png'),SIZE_FOOD_IMG),
@@ -36,29 +55,48 @@ SKIN_6= 'sheep'
 SKIN_7= 'snake'
 SKIN_8= 'unicorn'
 
+ALGORITHM_MODE='Algorithm'
+
+MODES={
+    'Basic':BASIC_MODE,
+    'Algorithm':ALGORITHM_MODE
+}
+
+MAPS={
+    'Default':NO_MAP,
+    'Easy':MAP0,
+    'Normal':MAP1,
+    'Difficult':MAP2
+    }
+
+SKINS={
+    'snake-blue':SKIN_1,
+    'anaconda':SKIN_2,
+    'crocodile':SKIN_3,
+    'frog':SKIN_4,
+    'pig':SKIN_5,
+    'sheep':SKIN_6,
+    'snake':SKIN_7,
+    'unicorn':SKIN_8
+    }
+
+ALGORITHMS= {
+    'BFS':BFS_ALGORITHM,
+    'DFS':DFS_ALGORITHM,
+    'UCS':UCS_ALGORITHM,
+    'GREEDY':GREEDY_ALGORITHM,
+    'A-STAR':ASTAR_ALGORITHM
+    }
+
 BACKGROUND_IMG=pygame.image.load(r'assets\background.png')
 
 SIMULATION_IMG=pygame.image.load(r'assets\simulation.png')
 
 OBSTACLE_IMG = pygame.transform.scale(pygame.image.load(r'assets\obstacle.png'),(CELL_SIZE,CELL_SIZE))
 
-#MENU
 
-BLACK = (0, 0, 0)
-MENU_COLOR = (163,167,172)
-WHITE = (255, 255, 255)
-BODER_COLOR = (146,163,186)
-NAVBAR_COLOR = (15,15,15)
-GREEN_HOVER = (145, 254, 36)
-BLACK_BLUE = (35, 45, 63)
-BODER_WIDTH = 3
-BODER_COLOR = WHITE
 
-MAP={
-    'Easy':MAP0,
-    'Normal':MAP1,
-    'Difficult':MAP2 
-}
+
 
 #212x152
 WIDTH_BOARD = CELL_SIZE*CELL_NUMBER_X + CELL_SIZE*2
@@ -88,12 +126,7 @@ DEPTH_LIMIT = 10
 
 DIRECTIONS = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
 
-GREEDY_ALGORITHM='greedy'
-UCS_ALGORITHM='ucs'
-BFS_ALGORITHM='bfs'
-DFS_ALGORITHM='dfs'
-ASTAR_ALGORITHM='a_star'
-NO_ALGORITHM=''
+
 
 
 
