@@ -21,6 +21,7 @@ UCS_ALGORITHM='UCS'
 BFS_ALGORITHM='BFS'
 DFS_ALGORITHM='DFS'
 ASTAR_ALGORITHM='A-STAR'
+HILL_CLIMBING_ALGORITHM='HILL-CLIMBING'
 BASIC_MODE='Basic'
 
 #MENU
@@ -85,16 +86,15 @@ ALGORITHMS= {
     'DFS':DFS_ALGORITHM,
     'UCS':UCS_ALGORITHM,
     'GREEDY':GREEDY_ALGORITHM,
-    'A-STAR':ASTAR_ALGORITHM
-    }
+    'A-STAR':ASTAR_ALGORITHM,
+    'HILL-CLIMBING':HILL_CLIMBING_ALGORITHM
+}
 
 BACKGROUND_IMG=pygame.image.load(r'assets\background.png')
 
 SIMULATION_IMG=pygame.image.load(r'assets\simulation.png')
 
 OBSTACLE_IMG = pygame.transform.scale(pygame.image.load(r'assets\obstacle.png'),(CELL_SIZE,CELL_SIZE))
-
-
 
 
 

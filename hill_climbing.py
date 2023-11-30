@@ -14,6 +14,7 @@ class HillClimbing:
         self.food_y = food_y
         self.obstacles =  obstacles
         self.node = Node(self.X, self.Y, self.food_x, self.food_y)
+        self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
         self.moved_pos=[] 
         
@@ -94,16 +95,17 @@ class HillClimbing:
                 print(f"Moved to: {self.X[0]//CELL_SIZE}, {self.Y[0]//CELL_SIZE}")  # In ra đỉnh đã đi qua
             else:
                 break
-if __name__ == "__main__":
-    initial_Y = [345, 340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, 285, 280, 275, 270, 265, 260]  # Thay thế giá trị ban đầu cho X và Y tại đây
-    initial_X = [405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405]
-    food_x = 250  # Thay thế giá trị thức ăn X và Y tại đây
-    food_y = 250
+            
+# if __name__ == "__main__":
+#     initial_Y = [345, 340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, 285, 280, 275, 270, 265, 260]  # Thay thế giá trị ban đầu cho X và Y tại đây
+#     initial_X = [405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405]
+#     food_x = 250  # Thay thế giá trị thức ăn X và Y tại đây
+#     food_y = 250
 
-    astar = HillClimbing(initial_X, initial_Y, food_x, food_y,{})
-    astar.hill_climbing()  # Gọi phương thức Hill Climbing
+#     astar = HillClimbing(initial_X, initial_Y, food_x, food_y,{})
+#     astar.hill_climbing()  # Gọi phương thức Hill Climbing
 
-    # In ra đường đi sau khi tối ưu
-    print("Optimized path:")
-    optimized_path = astar.moved_pos
-    print(optimized_path)# Không có bước di chuyển nào cải thiện được nữa
+#     # In ra đường đi sau khi tối ưu
+#     print("Optimized path:")
+#     optimized_path = astar.moved_pos
+#     print(optimized_path)# Không có bước di chuyển nào cải thiện được nữa

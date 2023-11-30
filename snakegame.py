@@ -11,36 +11,7 @@ from greedy import *
 from ucs import *
 from dfs import *
 from a_star import *
-
-MODES={
-    'Basic':BASIC_MODE,
-    'Algorithm':ALGORITHM_MODE
-}
-
-MAPS={
-    'Easy':MAP0,
-    'Normal':MAP1,
-    'Difficult':MAP2
-    }
-
-SKINS={
-    'snake-blue':SKIN_1,
-    'anaconda':SKIN_2,
-    'crocodile':SKIN_3,
-    'frog':SKIN_4,
-    'pig':SKIN_5,
-    'sheep':SKIN_6,
-    'snake':SKIN_7,
-    'unicorn':SKIN_8
-    }
-
-ALGORITHMS= {
-    'BFS':BFS_ALGORITHM,
-    'DFS':DFS_ALGORITHM,
-    'UCS':UCS_ALGORITHM,
-    'GREEDY':GREEDY_ALGORITHM,
-    'A-STAR':ASTAR_ALGORITHM
-    }
+from hill_climbing import *
 
 class Game:
     def __init__(self):
@@ -270,6 +241,12 @@ class Game:
         self.simulations= astar.moved_pos
         self.draw_Simulations()
     
+    def HillClimbingAlgorithm(self):
+        hill=HillClimbing(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
+        self.actions = deque(hill.hill_climbing())
+        self.simulations= hill.moved_pos
+        self.draw_Simulations()
+    
     def draw_Simulations(self):
         self.actions_total.append(len(self.actions))
         self.actions_total_count+=len(self.actions)
@@ -367,6 +344,8 @@ class Game:
             self.DFSAlgorithm()
         elif self.algorithm==ASTAR_ALGORITHM:
             self.AStarAlgorithm()
+        elif self.algorithm==HILL_CLIMBING_ALGORITHM:
+            self.HillClimbingAlgorithm()
     
     def get_obstacles(self):
         running=True
