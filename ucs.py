@@ -36,6 +36,7 @@ class UCS:
         dest = ((self.food_y//CELL_SIZE)-1, (self.food_x//CELL_SIZE)-1)
         tempX = self.X.copy()
         tempY = self.Y.copy()
+        current_path = []
 
         visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
         self.visited_cost = set()
@@ -47,11 +48,8 @@ class UCS:
         while pq:
             node = heapq.heappop(pq)
             (cost, pt, path, tempX, tempY, mat) = (node[0], node[1], node[2], node[3], node[4], node[5])
+            current_path = path
             self.visited_cost.add((cost, pt))
-
-            if self.is_collision(pt[0],pt[1],dest[0],dest[1]):
-                print("ucs: ",pt,dest)
-                return path
 
             (row, col) = (pt[0], pt[1])
 
@@ -71,10 +69,4 @@ class UCS:
                     visited[newRow][newCol] = True
                     newCost = cost + 1
                     pq.append((newCost, (newRow, newCol), newPath, newTempX, newTempY, newMat))
-        return Queue()
-    
-    def is_collision(self, x1, y1, x2, y2,d=0):
-        if x1 >= x2-d and x1 < x2 + 1+d:
-            if y1 >= y2-d and y1 <y2 + 1+d:
-                return True
-        return False
+        return current_path
