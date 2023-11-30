@@ -17,95 +17,48 @@ class HillClimbing:
         self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
         self.moved_pos=[] 
-        
     
-    def get_possible_moves(self, matrix):
-        moves = []
-        head_pos = np.where(matrix==1)
-        head_pos_x = head_pos[1][0]
-        head_pos_y = head_pos[0][0]
-
-        if head_pos_x > 0:
-            if matrix[head_pos_y][head_pos_x-1] == 0 or matrix[head_pos_y][head_pos_x-1] == -1:
-                moves.append(LEFT)
-        if head_pos_x < WIDTH_BOARD//CELL_SIZE-1:
-            if matrix[head_pos_y][head_pos_x+1] == 0 or matrix[head_pos_y][head_pos_x+1] == -1:
-                moves.append(RIGHT)
-        if head_pos_y > 0:
-            if matrix[head_pos_y-1][head_pos_x] == 0 or matrix[head_pos_y-1][head_pos_x] == -1:
-                moves.append(UP)
-        if head_pos_y < HEIGHT_BOARD//CELL_SIZE-1: 
-            if matrix[head_pos_y+1][head_pos_x] == 0 or matrix[head_pos_y+1][head_pos_x] == -1:
-                moves.append(DOWN)
-
-        return moves
-    
-    def heuristic(self, row, col, dest_y, dest_x):
-        return abs(row-dest_y) + abs(col-dest_x)
-    
-    def perform_move(self, matrix, move, tempX, tempY):
-        val_x = tempX[0]
-        val_y = tempY[0]
-        tempX = np.roll(tempX, 1)
-        tempY = np.roll(tempY, 1)
-        speed = CELL_SIZE
-
-        if move == LEFT:
-            tempX[0] = val_x - speed
-            tempY[0] = val_y
-        if move == RIGHT:
-            tempX[0] = val_x + speed
-            tempY[0] = val_y
-        if move == UP:
-            tempY[0] = val_y - speed 
-            tempX[0] = val_x
-        if move == DOWN:
-            tempY[0] = val_y + speed 
-            tempX[0] = val_x  
-        new_node = Node(tempX, tempY, self.food_x, self.food_x)
-        new_node.obstacles=self.obstacles
-        new_matrix = new_node.CreateState()
-        return new_matrix, tempX, tempY
+    def isValid(sefl, mat, visited, row, col):
+        return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
     
     def hill_climbing(self):
-        current_distance = self.heuristic(self.Y[0]//CELL_SIZE, self.X[0]//CELL_SIZE, self.food_y//CELL_SIZE, self.food_x//CELL_SIZE)
+        mat = self.matrix_state
+        src = ((self.Y[0] // CELL_SIZE) - 1, (self.X[0] // CELL_SIZE) - 1)
+        dest = ((self.food_y // CELL_SIZE) - 1, (self.food_x // CELL_SIZE) - 1)
+        current_position = src
+        current_path = []
+        best_neighbor_h = len(mat[0])*len(mat)
+        
+        visited = [[False for x in range(len(mat[0]))] for y in range(len(mat))]
+        
         while True:
-            best_distance = current_distance
-            best_move = None
-            for move in self.get_possible_moves(self.matrix_state):
-                tempX = self.X.copy()
-                tempY = self.Y.copy()
-                newNode = self.perform_move(self.matrix_state, move, tempX, tempY)
-                new_distance = self.heuristic(newNode.snakeY[0]//CELL_SIZE, newNode.snakeX[0]//CELL_SIZE, self.food_y//CELL_SIZE, self.food_x//CELL_SIZE)
-                if new_distance < best_distance:
-                    best_distance = new_distance
-                    best_move = move
-            
-            if best_move:
-                tempX = self.X.copy()
-                tempY = self.Y.copy()
-                newNode = self.perform_move(self.matrix_state, move, tempX, tempY)
-               
-                self.X = newNode.snakeX
-                self.Y = newNode.snakeY
-                self.matrix_state = newNode.CreateState()
-                current_distance = best_distance
-                # Thêm đỉnh mới vào danh sách self.moved_pos
-                self.moved_pos.append((self.X[0]//CELL_SIZE, self.Y[0]//CELL_SIZE))
-                print(f"Moved to: {self.X[0]//CELL_SIZE}, {self.Y[0]//CELL_SIZE}")  # In ra đỉnh đã đi qua
-            else:
-                break
-            
-# if __name__ == "__main__":
-#     initial_Y = [345, 340, 335, 330, 325, 320, 315, 310, 305, 300, 295, 290, 285, 280, 275, 270, 265, 260]  # Thay thế giá trị ban đầu cho X và Y tại đây
-#     initial_X = [405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405, 405]
-#     food_x = 250  # Thay thế giá trị thức ăn X và Y tại đây
-#     food_y = 250
-
-#     astar = HillClimbing(initial_X, initial_Y, food_x, food_y,{})
-#     astar.hill_climbing()  # Gọi phương thức Hill Climbing
-
-#     # In ra đường đi sau khi tối ưu
-#     print("Optimized path:")
-#     optimized_path = astar.moved_pos
-#     print(optimized_path)# Không có bước di chuyển nào cải thiện được nữa
+            if current_position == dest:
+                return current_path
+            best_neighbor = None
+            neighbors = []
+            directions = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
+            for d in directions:
+                
+                newRow, newCol = current_position[0] + d[0], current_position[1] + d[1]
+                
+                if self.isValid(self.matrix_state, visited, newRow, newCol):
+                    tempX = self.X.copy()
+                    tempY = self.Y.copy()
+                    newNode = Node(tempX, tempY, self.food_x, self.food_y).move(d[2])
+                    self.moved_pos.append((newCol,newRow))
+                    visited[newRow][newCol] = True
+                    neighbor_h = abs(newRow - dest[0]) + abs(newCol - dest[1])  # Heuristic function
+                    if neighbor_h < best_neighbor_h:
+                        self.mat = newNode.CreateState()
+                        neighbors.append((newRow, newCol, d[2]))
+                        best_neighbor = d[2]
+                        best_neighbor_h = neighbor_h
+            if len(neighbors) == 0:
+                print("neighbor_h: ", neighbor_h)
+                print("best_neighbor_h:",best_neighbor_h)
+                print("not find")
+                print(current_path)
+                return current_path
+            best_neighbor = min(neighbors, key=lambda x: abs(dest[0] - x[0]) + abs(dest[1] - x[1]))
+            current_path.append(best_neighbor[2])
+            current_position = (best_neighbor[0], best_neighbor[1])
