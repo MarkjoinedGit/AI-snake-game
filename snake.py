@@ -13,8 +13,8 @@ class Snake:
         self.head = self.snake_skin.head[self.direction].convert_alpha()
         self.head_rect = self.head.get_rect()
         self.length = 10
-        self.x = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
-        self.y = [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
+        self.x = [910, 920, 930, 940, 950, 960, 970, 980, 990, 1000]
+        self.y = [560, 560, 560, 560, 560, 560, 560, 560, 560, 560]
         
     def move_left(self):
         self.direction = LEFT

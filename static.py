@@ -132,6 +132,19 @@ DIRECTIONS = [(0, -1, LEFT), (-1, 0, UP), (0, 1, RIGHT), (1, 0, DOWN)]
 
 DEPTH_OFFSET = 200
 
+DEFAULT_FOOD = [
+    (590, 330),
+    (1030, 190),
+    (670, 560),
+    (640, 510),
+    (600, 450),
+    (660, 190),
+    (830, 280),
+    (540, 270),
+    (150, 260), 
+    (100, 200)
+]
+
 def posGame_to_posMatrix(a):
     return (a//CELL_SIZE)-1
 

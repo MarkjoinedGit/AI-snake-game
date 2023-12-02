@@ -82,14 +82,10 @@ while True:
             for btn in btn_menu_list:
                 if btn.check_click():
                     if btn.text == 'Mode':
-                        print(btn.check_click())
                         mode_menu_open = True
                     elif btn.text == 'Settings':
-                        print(btn.check_click())
                         setting_menu_open = True
                     elif btn.text == 'Start':
-                        print(btn.check_click())
-                        print('get in to start mode')
                         start_game = True
                         
     screen.fill('black')

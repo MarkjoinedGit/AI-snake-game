@@ -100,17 +100,9 @@ class Node:
         return  path[::-1]
     
     def print(self,name='Node-State'):
-        print(f'-----------------------------{name}--------------------------------')
-        print('snakeX= ',posGame_to_posMatrix_list( self.snakeX))
-        print('snakeY= ',posGame_to_posMatrix_list(self.snakeY))
-        print('Food(x,y)= ',(posGame_to_posMatrix(self.foodX),posGame_to_posMatrix(self.foodY)))
-        print('h= ',self.h)
-        print('g= ',self.g)
-        print('f= ',self.f)
         path= self.get_path()
         if path==None:
             path=[]
-        print(f'path({len(path)})= ',path)
         
     def __lt__(self, other):
         return self.f < other.f

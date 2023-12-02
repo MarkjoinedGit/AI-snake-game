@@ -17,11 +17,13 @@ class HillClimbing:
         self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
         self.moved_pos=[] 
+        self.run_time=0 
     
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
     
     def hill_climbing(self):
+        start_time=time.time()
         mat = self.matrix_state
         src = ((self.Y[0] // CELL_SIZE) - 1, (self.X[0] // CELL_SIZE) - 1)
         dest = ((self.food_y // CELL_SIZE) - 1, (self.food_x // CELL_SIZE) - 1)
@@ -33,6 +35,7 @@ class HillClimbing:
         
         while True:
             if current_position == dest:
+                self.run_time=(time.time()-start_time)*1000//1
                 return current_path
             best_neighbor = None
             neighbors = []

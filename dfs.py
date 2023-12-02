@@ -66,9 +66,3 @@ class DFS:
                     stack.append(((newRow, newCol), newPath, newTempX, newTempY, newMat))
         return current_path
     
-# X = [255, 260, 265, 270, 275, 280, 285, 290, 295, 300]
-# Y= [220, 220, 220, 220, 220, 220, 220, 220, 220, 220]
-# food_x = 50
-# food_y = 150
-# ids = DFS(X, Y, food_x, food_y, set())
-# print(ids.dfs())

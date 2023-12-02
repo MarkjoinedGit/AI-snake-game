@@ -13,6 +13,7 @@ class IDS:
         self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
         self.moved_pos=[] 
+        self.run_time=0 
      
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
@@ -26,11 +27,13 @@ class IDS:
         return False
 
     def ids(self):
+        start_time=time.time()
         depth = 0
         while depth <= len(self.matrix_state)*len(self.matrix_state[0]):
             self.moved_pos.clear()
             result = self.dls(depth)
             if result is not None:
+                self.run_time=(time.time()-start_time)*1000//1
                 return result
             depth += DEPTH_OFFSET
 
