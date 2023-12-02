@@ -156,17 +156,15 @@ class Game:
             self.food.move()
 
     def render_background(self):
-        self.surface.fill('black')
         bg = BACKGROUND_IMG.convert_alpha()
         self.surface.blit(bg, (0,0))
 
     def play_algorithm(self):
+
         self.draw_display()
         self.food.draw()
-        self.draw_obstacles()  
         self.snake.walk()
         self.display_score()
-        pygame.display.flip()
         
         self.check_collision_algorithm() 
         
@@ -176,10 +174,12 @@ class Game:
         # print(self.actions)
         if len(self.actions)==0:
             self.choose_Algorithm()
+        
         self.display_runtime()
         self.display_count_path()
         self.display_count_visited()
-        self.draw_Simulations()       
+        pygame.display.flip()
+
                              
     def play_basic(self):
         self.draw_display()
@@ -231,15 +231,17 @@ class Game:
         self.actions = deque(dfs.dfs())
         self.run_time=dfs.run_time
         self.simulations= dfs.moved_pos
+        del dfs
         self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
         self.draw_Simulations_vip()
-        self.draw_Simulations()
 
     def IDSAlgorithm(self):
         ids = IDS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(ids.ids())
         self.simulations= ids.moved_pos
-        self.draw_Simulations()
+        del ids
+        self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
+        self.draw_Simulations_vip()
     
     def UCSAlgorithm(self):
         ucs=UCS(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
@@ -250,22 +252,19 @@ class Game:
         self.draw_Simulations_vip()
         
     def AStarAlgorithm(self):
-        print(self.snake.x)
-        print(self.snake.y)
-        print(self.food.x)
-        print(self.food.y)
         astar=ASTAR(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(astar.a_star())
         self.run_time=astar.run_time
         self.simulations= astar.moved_pos
         self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
         self.draw_Simulations_vip()
-    
+
     def HillClimbingAlgorithm(self):
         hill=HillClimbing(self.snake.x,self.snake.y,self.food.x,self.food.y,self.obstacles)
         self.actions = deque(hill.hill_climbing())
         self.simulations= hill.moved_pos
-        self.draw_Simulations()
+        self.paths_pos=path_to_pos(self.snake.x[0],self.snake.y[0],np.array(self.actions))
+        self.draw_Simulations_vip()
     
     def draw_Simulations(self):
         if self.is_Simulations_Mode==False:
@@ -274,11 +273,13 @@ class Game:
             pos = tuple(posMatrix_to_posGame_list(simu))
             if pos in self.paths_pos:
                 self.pathImg_rect.center = tuple(pos)
-                self.surface.blit(self.pathImg, self.pathImg_rect)
+                pathimg = PATH_IMG.convert_alpha()
+                self.surface.blit(pathimg, self.pathImg_rect)
             else:
+                pos = tuple(posMatrix_to_posGame_list(simu))
                 self.simulationImg_rect.center = tuple(pos)
-                self.surface.blit(self.simulationImg, self.simulationImg_rect)
-        pygame.display.flip()
+                simuimg = SIMULATION_IMG.convert_alpha()
+                self.surface.blit(simuimg, self.simulationImg_rect)
     
     def draw_Simulations_vip(self):
         if self.is_Simulations_Mode==False:
@@ -286,12 +287,14 @@ class Game:
         for simu in self.simulations:
             pos = tuple(posMatrix_to_posGame_list(simu))
             self.simulationImg_rect.center = tuple(pos)
-            self.surface.blit(self.simulationImg, self.simulationImg_rect)
-            pygame.display.flip()
+            simuimg = SIMULATION_IMG.convert_alpha()
+            self.surface.blit(simuimg, self.simulationImg_rect)
+            pygame.display.update()
         for pos in self.paths_pos:
             self.pathImg_rect.center = tuple(pos)
-            self.surface.blit(self.pathImg, self.pathImg_rect)
-            pygame.display.flip()
+            pathimg = PATH_IMG.convert_alpha()
+            self.surface.blit(pathimg, self.pathImg_rect)
+            pygame.display.update()
 
     def check_collision_algorithm(self):
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.food.x, self.food.y,0):      
@@ -311,10 +314,12 @@ class Game:
                 raise "Collision Occurred"       
             
     def draw_display(self):
-        self.surface.fill('black')
         self.render_background() 
         self.surface.blit(self.navbar,(0,0))
         self.drawBorderBoard()
+        if len(self.actions):
+            self.draw_Simulations()
+        self.draw_obstacles()  
         if self.menu_mode:
             self.surface.blit(self.logo_surf, self.logo_rect)
             for btn in self.btn_menu_list:
@@ -422,151 +427,152 @@ class Game:
             self.obstacleImg_rect.center = obstacle
             self.surface.blit(self.obstacleImg, self.obstacleImg_rect)
     
-    def run_algorithm(self):
-        running = True
-        pause = False
-        pygame.display.flip()
+    # def run_algorithm(self):
+    #     running = True
+    #     pause = False
+    #     pygame.display.flip()
         
-        if self.is_Draw_Map_Mode:
-            self.get_obstacles()
-            self.is_Draw_Map_Mode=False
-        # start_time= time.time()
-        self.choose_Algorithm()
-        
-        while running:
-            # print("----------------------------State-------------------------")
-            # print(self.snake.x,self.snake.y,sep='\n')
-            # print("Food: ",(self.food.x,self.food.y))
-            # print(self.actions)
+    #     if self.is_Draw_Map_Mode:
+    #         self.get_obstacles()
+    #         self.is_Draw_Map_Mode=False
+    #     # start_time= time.time()
+    #     self.choose_Algorithm()
+    #     while running:
+    #         # print("----------------------------State-------------------------")
+    #         # print(self.snake.x,self.snake.y,sep='\n')
+    #         # print("Food: ",(self.food.x,self.food.y))
+    #         # print(self.actions)
             
-            if self.actions==None:
-                running=False
-            if(len(self.actions)>0):        
-                move = self.actions.popleft()
-                self.displayMovement(move)
-            for event in pygame.event.get():
-                if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE:
-                        running = False
-                    if event.key == K_RETURN:
-                        pygame.mixer.music.unpause()
-                        pause = False
-                if event.type == pygame.QUIT:
-                    running = False
-                    pygame.quit()
-                if event.type == pygame.MOUSEBUTTONDOWN: 
-                    if self.sub_mode_rect.collidepoint(pygame.mouse.get_pos()) == False and self.sub_algorithm_rect.collidepoint(pygame.mouse.get_pos()) == False:
-                        self.mode_menu_open = False      
-                        pause=False  
-                    for btn in self.btn_menu_list:
-                        btn.pressed = False
-                    for btn in self.btn_menu_list:
-                        if btn.check_click():   
-                            if btn.text == 'MENU':
-                                pause = True
-                                print('get into menu')
-                                self.mode_menu_open = True
-                            if btn.text == 'PLAY':
-                                pause= False
-                            break
+    #         if self.actions==None:
+    #             running=False
+    #         if(len(self.actions)>0):        
+    #             move = self.actions.popleft()
+    #             self.displayMovement(move)
+    #         for event in pygame.event.get():
+    #             if event.type == KEYDOWN:
+    #                 if event.key == K_ESCAPE:
+    #                     running = False
+    #                 if event.key == K_RETURN:
+    #                     pygame.mixer.music.unpause()
+    #                     pause = False
+    #             if event.type == pygame.QUIT:
+    #                 running = False
+    #                 pygame.quit()
+    #             if event.type == pygame.MOUSEBUTTONDOWN: 
+    #                 if self.sub_mode_rect.collidepoint(pygame.mouse.get_pos()) == False and self.sub_algorithm_rect.collidepoint(pygame.mouse.get_pos()) == False:
+    #                     self.mode_menu_open = False      
+    #                     pause=False  
+    #                 for btn in self.btn_menu_list:
+    #                     btn.pressed = False
+    #                 for btn in self.btn_menu_list:
+    #                     if btn.check_click():   
+    #                         if btn.text == 'MENU':
+    #                             pause = True
+    #                             print('get into menu')
+    #                             self.mode_menu_open = True
+    #                             self.btn_sub_opts_list.clear()
+    #                             self.choose_algorithm=False
+    #                             self.choose_skin=False
+    #                             self.is_Draw_Map_Mode=False
+    #                         if btn.text == 'PLAY':
+    #                             pause= False
+    #                         break
                         
-                    if self.mode_menu_open==True:
-                        for btn in self.btn_sub_mode_list:
-                            btn.pressed = False
-                        for btn in self.btn_sub_mode_list:
-                            if btn.check_click():   
-                                if btn.text == 'Basic':
-                                    self.mode=BASIC_MODE
-                                    self.mode_menu_open = False
-                                    self.otp_is_click=True
-                                    pause= True 
-                                if btn.text == 'Algorithm':
-                                    self.mode=ALGORITHM_MODE
-                                    self.btn_list_otps=list(ALGORITHMS.keys())
-                                    self.choose_algorithm=True
-                                elif btn.text =='Skin':
-                                    self.btn_list_otps=list(SKINS.keys())
-                                    self.choose_skin=True
-                                elif btn.text =='Map':
-                                    self.btn_list_otps=list(MAPS.keys())
-                                    self.choose_map=True  
-                                elif btn.text=='Draw-Map':       
-                                    self.is_Draw_Map_Mode=True
-                                    self.otp_is_click=True
-                                    self.mode_menu_open = False
-                                    pause= True 
-                                elif btn.text=='Simulations':
-                                    if self.is_Simulations_Mode:
-                                        self.is_Simulations_Mode=False
-                                    else:
-                                        self.is_Simulations_Mode=True
-                                    self.otp_is_click=True
-                                    self.mode_menu_open = False
-                                    pause= True 
-                                self.init_menu()
-                                self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_opts_list, self.mode_menu_open)
-                                pygame.display.flip()
-                                self.mode_is_click=True
+    #                 if self.mode_menu_open==True:
+    #                     for btn in self.btn_sub_mode_list:
+    #                         btn.pressed = False
+    #                     for btn in self.btn_sub_mode_list:
+    #                         if btn.check_click():   
+    #                             if btn.text == 'Basic':
+    #                                 self.mode=BASIC_MODE
+    #                                 self.mode_menu_open = False
+    #                                 self.otp_is_click=True
+    #                                 pause= True 
+    #                             if btn.text == 'Algorithm':
+    #                                 self.mode=ALGORITHM_MODE
+    #                                 self.btn_list_otps=list(ALGORITHMS.keys())
+    #                                 self.choose_algorithm=True
+    #                             elif btn.text =='Skin':
+    #                                 self.btn_list_otps=list(SKINS.keys())
+    #                                 self.choose_skin=True
+    #                             elif btn.text =='Map':
+    #                                 self.btn_list_otps=list(MAPS.keys())
+    #                                 self.choose_map=True  
+    #                             elif btn.text=='Draw-Map':       
+    #                                 self.is_Draw_Map_Mode=True
+    #                                 self.otp_is_click=True
+    #                                 self.mode_menu_open = False
+    #                                 pause= True 
+    #                             elif btn.text=='Simulations':
+    #                                 if self.is_Simulations_Mode:
+    #                                     self.is_Simulations_Mode=False
+    #                                 else:
+    #                                     self.is_Simulations_Mode=True
+    #                                 self.otp_is_click=True
+    #                                 self.mode_menu_open = False
+    #                                 pause= True 
+    #                             self.init_menu()
+    #                             self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_opts_list, self.mode_menu_open)
+    #                             self.mode_is_click=True
                                 
-                    if self.mode_is_click:
-                        
-                        for btn in self.btn_sub_opts_list:
-                            btn.pressed = False
-                        for btn in self.btn_sub_opts_list:
-                            if btn.check_click():   
-                                if self.choose_algorithm:
-                                    self.algorithm=ALGORITHMS[btn.text]
-                                if self.choose_skin:
-                                    self.skin_Snake=SKINS[btn.text]                      
-                                if self.choose_map:
-                                    self.obstacles=MAPS[btn.text] 
-                                self.otp_is_click=True
-                                self.mode_menu_open = False
-                                pause= True 
-                                break   
-                        print('select ',self.algorithm)            
-                    if self.logo_rect.collidepoint(pygame.mouse.get_pos()):
-                        print('collide with logo')
-                        self.show_game_over()
-                        pause = True
-                        self.reset()
-                        self.mode_menu_open = True
-                        return
+    #                 if self.mode_is_click:
+    #                     for btn in self.btn_sub_opts_list:
+    #                         btn.pressed = False
+    #                     for btn in self.btn_sub_opts_list:
+    #                         if btn.check_click():   
+    #                             if self.choose_algorithm:
+    #                                 self.algorithm=ALGORITHMS[btn.text]
+    #                                 print('select ',self.algorithm)       
+    #                             elif self.choose_skin:
+    #                                 self.skin_Snake=SKINS[btn.text]                      
+    #                             elif self.choose_map:
+    #                                 self.obstacles=MAPS[btn.text] 
+    #                             self.otp_is_click=True
+    #                             self.mode_menu_open = False
+    #                             # pause= True 
+    #                             break       
+    #                 if self.logo_rect.collidepoint(pygame.mouse.get_pos()):
+    #                     print('collide with logo')
+    #                     self.show_game_over()
+    #                     pause = True
+    #                     self.reset()
+    #                     self.mode_menu_open = True
+    #                     return
             
-            try:
-                if not pause:
-                    self.play_algorithm()
-                else:
-                    if self.menu_mode:
-                        self.surface.blit(self.logo_surf, self.logo_rect)
-                        for btn in self.btn_menu_list:
-                            btn.draw()
-                        if self.mode_menu_open:
-                            self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_opts_list, self.mode_menu_open)
-                        if self.otp_is_click:
-                            self.init_NewStateGame()
-                            self.btn_sub_opts_list=[]
-                            self.init_menu()
-                            pygame.display.flip()
-                            return
-                    pygame.display.flip()
-            except Exception as e:
-                print(e)
-                # print("----------------------------ERROR-------------------------")
-                # # print(self.snake.x,self.snake.y,sep='\n')
-                # # print("Food: ",(self.food.x,self.food.y))
-                # # print(self.actions)
+    #         try:
+    #             if not pause:
+    #                 self.play_algorithm()
+    #             else:
+    #                 if self.menu_mode:
+    #                     self.surface.blit(self.logo_surf, self.logo_rect)
+    #                     for btn in self.btn_menu_list:
+    #                         btn.draw()
+    #                     if self.mode_menu_open:
+    #                         self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_opts_list, self.mode_menu_open)
+    #                     elif self.otp_is_click:
+    #                         self.init_NewStateGame()
+    #                         self.btn_sub_opts_list=[]
+    #                         self.init_menu()
+    #                         return
+    #                 pygame.display.flip()
+    #         except Exception as e:
+    #             print(e)
+    #             # print("----------------------------ERROR-------------------------")
+    #             # # print(self.snake.x,self.snake.y,sep='\n')
+    #             # # print("Food: ",(self.food.x,self.food.y))
+    #             # # print(self.actions)
 
-                # print("action len list=", self.actions_total)
-                # print("action total count=", self.actions_total_count)
-                # print("moved_pos len list=",self.moved_pos_total)
-                # print("moved_pos total cound=",self.moved_pos_total_count)
-                # self.run_time=time.time()-start_time
-                print(self.run_time)
-                self.show_game_over()
-                pause = True
-                self.reset()
-            self.clock.tick(FPS)
+    #             # print("action len list=", self.actions_total)
+    #             # print("action total count=", self.actions_total_count)
+    #             # print("moved_pos len list=",self.moved_pos_total)
+    #             # print("moved_pos total cound=",self.moved_pos_total_count)
+    #             # self.run_time=time.time()-start_time
+    #             print(self.run_time)
+    #             self.show_game_over()
+    #             pause = True
+    #             self.reset()
+
+    #         self.clock.tick(FPS)
     
     def run_basic(self):
         running = True
@@ -585,16 +591,12 @@ class Game:
                         pygame.mixer.music.unpause()
                         pause = False
                     if not pause:
-                  
                         if event.key == K_LEFT:
                            self.displayMovement(LEFT)
-
                         if event.key == K_RIGHT:
                             self.displayMovement(RIGHT)
-
                         if event.key == K_UP:
                             self.displayMovement(UP)
-
                         if event.key == K_DOWN:
                             self.displayMovement(DOWN)
                 if event.type == pygame.QUIT:
@@ -609,13 +611,17 @@ class Game:
                     for btn in self.btn_menu_list:
                         if btn.check_click():   
                             if btn.text == 'MENU':
+                                self.choose_algorithm=False
+                                self.choose_skin=False
+                                self.is_Draw_Map_Mode=False
+                                self.otp_is_click=False
                                 pause = True
                                 print('get into menu')
                                 self.mode_menu_open = True
+                                self.btn_sub_opts_list.clear()
                             if btn.text == 'PLAY':
                                 pause= False
                             break
-                        
                     if self.mode_menu_open==True:
                         for btn in self.btn_sub_mode_list:
                             btn.pressed = False
@@ -656,22 +662,21 @@ class Game:
                                 self.mode_is_click=True
                                 
                     if self.mode_is_click:
-                        
                         for btn in self.btn_sub_opts_list:
                             btn.pressed = False
                         for btn in self.btn_sub_opts_list:
                             if btn.check_click():   
                                 if self.choose_algorithm:
                                     self.algorithm=ALGORITHMS[btn.text]
-                                if self.choose_skin:
+                                    print('select ',self.algorithm)  
+                                elif self.choose_skin:
                                     self.skin_Snake=SKINS[btn.text]                      
-                                if self.choose_map:
+                                elif self.choose_map:
                                     self.obstacles=MAPS[btn.text] 
                                 self.otp_is_click=True
                                 self.mode_menu_open = False
                                 pause= True 
-                                break   
-                        print('select ',self.algorithm)            
+                                break             
                     if self.logo_rect.collidepoint(pygame.mouse.get_pos()):
                         print('collide with logo')
                         self.show_game_over()
@@ -679,7 +684,6 @@ class Game:
                         self.reset()
                         self.mode_menu_open = True
                         return
-            
             try:
                 if not pause:
                     self.play_basic()
@@ -691,7 +695,7 @@ class Game:
                             btn.draw()
                         if self.mode_menu_open:
                             self.draw_sub_menu(self.btn_sub_mode_list, self.btn_sub_opts_list, self.mode_menu_open)
-                        if self.otp_is_click:
+                        elif self.otp_is_click:
                             self.init_NewStateGame()
                             self.btn_sub_opts_list=[]
                             self.init_menu()

@@ -28,10 +28,11 @@ class IDS:
     def ids(self):
         depth = 0
         while depth <= len(self.matrix_state)*len(self.matrix_state[0]):
+            self.moved_pos.clear()
             result = self.dls(depth)
             if result is not None:
                 return result
-            depth += 1
+            depth += DEPTH_OFFSET
 
     def dls(self, depth):
         mat = self.matrix_state
@@ -65,5 +66,4 @@ class IDS:
                     newNode.obstacles = self.obstacles
                     newMat, newTempX, newTempY = newNode.CreateState(), newNode.snakeX, newNode.snakeY  
                     stack.append(((newRow, newCol), newPath, newTempX, newTempY, newMat, current_depth + 1))
-
         return None

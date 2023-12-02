@@ -17,6 +17,7 @@ class ASTAR:
         self.node.obstacles=obstacles
         self.matrix_state = self.node.CreateState()
         self.moved_pos=[] 
+        self.run_time=0 
 
     def isValid(sefl, mat, visited, row, col):
         return (row >= 0) and (row < len(mat)) and (col >= 0) and (col < len(mat[0])) and ((mat[row][col] == 0) or (mat[row][col] == -1)) and not visited[row][col]
